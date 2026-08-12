@@ -1,0 +1,18 @@
+{
+  "exchange": "NSE",
+  "lookback_days_display": 60,
+  "evaluation_days": 45,
+  "volume_ma_period": 36,
+  "weekly_wma_period": 30,
+  "weekstart_day": "Monday",
+  "date_format": "DD-MM-YYYY",
+  "display_order": "descending",
+  "delivery_bins": {
+    "purple": {"min": 80, "max": 100, "color": "D8BFD8"},
+    "dark_green": {"min": 60, "max": 80, "color": "006400"},
+    "light_green": {"min": 50, "max": 60, "color": "90EE90"},
+    "blue": {"min": 40, "max": 50, "color": "ADD8E6"},
+    "white": {"min": 0, "max": 40, "color": "FFFFFF"}
+  },
+  "fno_grey_color": "D3D3D3"
+}

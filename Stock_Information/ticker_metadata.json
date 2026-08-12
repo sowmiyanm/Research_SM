@@ -1,0 +1,5322 @@
+{
+  "AARTIDRUGS": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ABBOTINDIA": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "AJANTPHARM": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ALEMBICLTD": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ALKEM": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "AMRUTANJAN": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "APLLTD": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ASTRAZEN": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "AUROPHARMA": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "BLISSGVS": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ZYDUSLIFE": {
+    "mcap": "LargeCap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "CAPLIPOINT": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "CIPLA": {
+    "mcap": "LargeCap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "DCAL": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "DIVISLAB": {
+    "mcap": "LargeCap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "DRREDDY": {
+    "mcap": "LargeCap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "ERIS": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "FDC": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "GLAXO": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "GLENMARK": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "GMMPFAUDLR": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "GRANULES": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "HESTERBIO": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "HIKAL": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "INDOCO": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "IPCALAB": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "JBCHEPHARM": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "JUBLPHARMA": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "LAURUSLABS": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "LUPIN": {
+    "mcap": "LargeCap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "LINCOLN": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "MOREPENLAB": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "MARKSANS": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "NATCOPHARM": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ORCHPHARMA": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "NEULANDLAB": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "PFIZER": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ROSSARI": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "RPGLIFE": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SANOFI": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SEQUENT": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SMSPHARMA": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SOLARA": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SPARC": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "STAR": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SUNPHARMA": {
+    "mcap": "LargeCap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "SUVENPHAR": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ARTEMISMED": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SYNGENE": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "TORRNTPHARM": {
+    "mcap": "LargeCap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "KOPRAN": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "UNICHEMLAB": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SHILPAMED": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "PGHH": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "WOCKPHARMA": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "JUBLINGREA": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "GLAND": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "BIOCON": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "ONESOURCE": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "CUPID": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "BLUEJET": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "BAJAJHCARE": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "PPLPHARMA": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "THEMISMED": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SAILLIFE": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "EMCURE": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SYNCOMF": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "WINDLAS": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "AARTIPHARM": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "PANACEABIO": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "MANKIND": {
+    "mcap": "LargeCap",
+    "department": "Pharma/API",
+    "is_fno": true
+  },
+  "INNOVACAP": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ZOTA": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "PGHL": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SUPRIYA": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "AKUMS": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "TTKHLTCARE": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SANOFICORR": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "GUFICBIO": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "CONCORD BIO": {
+    "mcap": "Midcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "ALIVUS": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "SENORES": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "VIMTALABS": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "UDS": {
+    "mcap": "Smallcap",
+    "department": "Pharma/API",
+    "is_fno": false
+  },
+  "APOLLOHOSP": {
+    "mcap": "LargeCap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": true
+  },
+  "ASTERDM": {
+    "mcap": "Midcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "FORTIS": {
+    "mcap": "Midcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": true
+  },
+  "LALPATHLAB": {
+    "mcap": "Midcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "METROPOLIS": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "NH": {
+    "mcap": "Midcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "POLYMED": {
+    "mcap": "Midcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "KIMS": {
+    "mcap": "Midcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "THYROCARE": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "YATHARTH": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "TARSONS": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "ENTERO": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "MAXHEALTH": {
+    "mcap": "LargeCap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": true
+  },
+  "AGARWALEYE": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "SAGILITY": {
+    "mcap": "Midcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "LAXMIDIENTL": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "VIJAYA": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "RAINBOW": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "HCG": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "SHALBY": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "MEDANTA": {
+    "mcap": "Midcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "KRSNAA": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "JLHL": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "SURAKSHA": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "INDRAMEDCO": {
+    "mcap": "Smallcap",
+    "department": "Hospital/Diagnostics",
+    "is_fno": false
+  },
+  "AARTIIND": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": true
+  },
+  "ADVENZYMES": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "ALKYLAMINE": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "APCOTEXIND": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "ASTEC": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "ANURAS": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "LXCHEM": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "ATUL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "BALAMINES": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "BASF": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "BEPL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "BHARATRAS": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "CAMLINFINE": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "HERANBA": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "HEUBACHIND": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "DEEPAKNTR": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "PRIVISCL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "FINEORG": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "FLUOROCHEM": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "GALAXYSURF": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "GOCLCORP": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "GUJALKALI": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "HSCL": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "IGPL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "INDIAGLYCO": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "IOLCP": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "KIRIINDUS": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "EPIGRAL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "MOL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "NAVINFLUOR": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "NOCIL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "ACI": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "PANAMAPET": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "SOLARINDS": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": true
+  },
+  "SHK": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "SUDARSCHEM": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "SUMICHEM": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "TATACHEM": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": true
+  },
+  "TIRUMALCHM": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "UPL": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": true
+  },
+  "VIDHIING": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "VINATIORGA": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "NEOGEN": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "CLEAN": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "TATVA": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "FCL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "VISHNU": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "CHEMPLASTS": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "SHARDACROP": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "AMIORG": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "AETHER": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "DCW": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "YASHO": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "BHAGCHEM": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "SRF": {
+    "mcap": "Midcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": true
+  },
+  "GHCL": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "FOSECOIND": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "REFEX": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "RESPONIND": {
+    "mcap": "Smallcap",
+    "department": "Speciality Chem/Agro Chem",
+    "is_fno": false
+  },
+  "BAJAJCON": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "BRITANNIA": {
+    "mcap": "LargeCap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "COLPAL": {
+    "mcap": "Midcap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "LTFOODS": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "BECTORFOOD": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "DABUR": {
+    "mcap": "LargeCap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "DIAMONDYD": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "MANORAMA": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "PATANJALI": {
+    "mcap": "Midcap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "DODLA": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "SANSTAR": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "GOKULAGRO": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "GOPAL": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "HMAAGRO": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "KSCL": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "EMAMILTD": {
+    "mcap": "Midcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "GODREJCP": {
+    "mcap": "LargeCap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "HATSUN": {
+    "mcap": "Midcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "HERITGFOOD": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "HNDFDS": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "HINDUNILVR": {
+    "mcap": "LargeCap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "ITC": {
+    "mcap": "LargeCap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "JUBLFOOD": {
+    "mcap": "Midcap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "JYOTHYLAB": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "KRBL": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "MARICO": {
+    "mcap": "Midcap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "BIKAJI": {
+    "mcap": "Midcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "NESTLEIND": {
+    "mcap": "LargeCap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "PARAGMILK": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "PIDILITIND": {
+    "mcap": "LargeCap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "TASTYBITE": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "TATACONSUM": {
+    "mcap": "LargeCap",
+    "department": "FMCG",
+    "is_fno": true
+  },
+  "VADILALIND": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "VENKEYS": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "ZYDUSWELL": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "RBA": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "SAPPHIRE": {
+    "mcap": "Smallcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "DEVYANI": {
+    "mcap": "Midcap",
+    "department": "FMCG",
+    "is_fno": false
+  },
+  "HDFCBANK": {
+    "mcap": "LargeCap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "ICICIBANK": {
+    "mcap": "LargeCap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "KOTAKBANK": {
+    "mcap": "LargeCap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "AXISBANK": {
+    "mcap": "LargeCap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "SBIN": {
+    "mcap": "LargeCap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "INDUSINDBK": {
+    "mcap": "Midcap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "BANDHANBNK": {
+    "mcap": "Midcap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "FEDERALBNK": {
+    "mcap": "Midcap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "RBLBANK": {
+    "mcap": "Smallcap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "IDFCFIRSTB": {
+    "mcap": "Smallcap",
+    "department": "Banks",
+    "is_fno": true
+  },
+  "AAVAS": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "BAJAJFINSV": {
+    "mcap": "LargeCap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "AUBANK": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "BAJFINANCE": {
+    "mcap": "LargeCap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "CANFINHOME": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "CHOLAHLDNG": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "CHOLAFIN": {
+    "mcap": "LargeCap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "CREDITACC": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "MUTHOOTMF": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "EQUITASBNK": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "LICHS&FIN": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "M&MFIN": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "MANAPPURAM": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "FIVESTAR": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "IREDA": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "MUTHOOTFIN": {
+    "mcap": "LargeCap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "PEL": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "HOMEFIRST": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "REPCOHOME": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "SPANDANA": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "UJJIVANSFB": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "SATIN": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "AADHARHFC": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "HUDCO": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "INDIASHLTR": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "APTUS": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "IFCI": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "ARMANFIN": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "UGROCAP": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "NORTHARC": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "FEDFINA": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "IIFL": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "PNBHOUSING": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "BAJAJHFL": {
+    "mcap": "LargeCap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "SHRIRAMFIN": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "FUSION": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "NSIL": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "PFS": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "LTF": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "MASFIN": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "FINOPB": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "SUNDARMFIN": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "POONAWALLA": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "INDOSTAR": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "PAISALO": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "CGCL": {
+    "mcap": "Smallcap",
+    "department": "NBFC/HFI",
+    "is_fno": false
+  },
+  "SBICARD": {
+    "mcap": "Midcap",
+    "department": "NBFC/HFI",
+    "is_fno": true
+  },
+  "CANBK": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": true
+  },
+  "UNIONBANK": {
+    "mcap": "LargeCap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": true
+  },
+  "SOUTHBANK": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "DCBBANK": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "PNB": {
+    "mcap": "LargeCap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": true
+  },
+  "IOB": {
+    "mcap": "LargeCap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "PSB": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "J&KBANK": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "BANKBARODA": {
+    "mcap": "LargeCap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": true
+  },
+  "BANKINDIA": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": true
+  },
+  "UCOBANK": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "CENTRALBK": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "KTKBANK": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "IDBI": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "CSBBANK": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "YESBANK": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": true
+  },
+  "ESAFSFB": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "CUB": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "MAHABANK": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "TMB": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "KARURVYSYA": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "UTKARSHBNK": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "JSFB": {
+    "mcap": "Smallcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": false
+  },
+  "INDIANB": {
+    "mcap": "Midcap",
+    "department": "PSU/Small Pvt Banks",
+    "is_fno": true
+  },
+  "BHEL": {
+    "mcap": "Midcap",
+    "department": "PSU",
+    "is_fno": true
+  },
+  "BALMLAWRIE": {
+    "mcap": "Smallcap",
+    "department": "PSU",
+    "is_fno": false
+  },
+  "BEL": {
+    "mcap": "LargeCap",
+    "department": "PSU",
+    "is_fno": true
+  },
+  "COALINDIA": {
+    "mcap": "LargeCap",
+    "department": "PSU",
+    "is_fno": true
+  },
+  "CONCOR": {
+    "mcap": "Midcap",
+    "department": "PSU",
+    "is_fno": true
+  },
+  "DREDGECORP": {
+    "mcap": "Smallcap",
+    "department": "PSU",
+    "is_fno": false
+  },
+  "MSTCLTD": {
+    "mcap": "Smallcap",
+    "department": "PSU",
+    "is_fno": false
+  },
+  "NATIONALUM": {
+    "mcap": "Midcap",
+    "department": "PSU",
+    "is_fno": true
+  },
+  "NBCC": {
+    "mcap": "Midcap",
+    "department": "PSU",
+    "is_fno": true
+  },
+  "NCC": {
+    "mcap": "Smallcap",
+    "department": "PSU",
+    "is_fno": true
+  },
+  "NESCO": {
+    "mcap": "Smallcap",
+    "department": "PSU",
+    "is_fno": false
+  },
+  "NLCINDIA": {
+    "mcap": "Midcap",
+    "department": "PSU",
+    "is_fno": false
+  },
+  "NTPC": {
+    "mcap": "LargeCap",
+    "department": "PSU",
+    "is_fno": true
+  },
+  "SCI": {
+    "mcap": "Smallcap",
+    "department": "PSU",
+    "is_fno": false
+  },
+  "AFFLE": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "DIXON": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": true
+  },
+  "DLINKINDIA": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "DEN": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "HATHWAY": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "HONAUT": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "INDIAMART": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "IRCTC": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": true
+  },
+  "CIEINDIA": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "NAUKRI": {
+    "mcap": "LargeCap",
+    "department": "Software",
+    "is_fno": true
+  },
+  "CARTRADE": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "EASEMYTRIP": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "VERTOZ": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "IXIGO": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "KFINTECH": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": true
+  },
+  "POLICYBZAR": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "OPTIEMUS": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "AVALON": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "PGEL": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": true
+  },
+  "SYRMA": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "KAYNES": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": true
+  },
+  "TBOTEK": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "MOBIKWIK": {
+    "mcap": "Smallcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "PAYTM": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": true
+  },
+  "SWIGGY": {
+    "mcap": "Midcap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "ZOMATO": {
+    "mcap": "LargeCap",
+    "department": "Software",
+    "is_fno": false
+  },
+  "ACCELYA": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "APTECHT": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "CYIENT": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "ECLERX": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "HCLTECH": {
+    "mcap": "LargeCap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "INTELLECT": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "INFY": {
+    "mcap": "LargeCap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "LTIM": {
+    "mcap": "LargeCap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "LTTS": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "MASTEK": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "MPHASIS": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "NEWGEN": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "NIITLTD": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "OFSS": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "PERSISTENT": {
+    "mcap": "LargeCap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "QUICKHEAL": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "RSYSTEMS": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "SAKSOFT": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "SONATSOFTW": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "TATAELXSI": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "TCS": {
+    "mcap": "LargeCap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "TANLA": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "NETWEB": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "COFORGE": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "XCHANGING": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "INFOBEAN": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "WIPRO": {
+    "mcap": "LargeCap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "ZENSARTECH": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "NUCLEUS": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "BSOFT": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "HAPPSTMNDS": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "ZAGGLE": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "SUBEXLTD": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "KPITTECH": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "RAMCOSYS": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "INFIBEAM": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "RATEGIAN": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "REDINGTON": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "FSL": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "E2E": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "GENESYS": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "LATENTVIEW": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "SASKEN": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "AURIONPRO": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "EMUDHRA": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "PROTEAN": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "BLSE": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "CIGNITITEC": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "TATATECH": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "EXPLEOSOL": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "DATAMATICS": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "TECHM": {
+    "mcap": "LargeCap",
+    "department": "Software/IT",
+    "is_fno": true
+  },
+  "ROUTE": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "MAPMYINDIA": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "MCLOUD": {
+    "mcap": "Smallcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "IKS": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "BLS": {
+    "mcap": "Midcap",
+    "department": "Software/IT",
+    "is_fno": false
+  },
+  "ABB": {
+    "mcap": "LargeCap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "APARINDS": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "BAJAJELEC": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "CROMPTON": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "CUMMINSIND": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "FINCABLES": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "GET&D": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "HAVELLS": {
+    "mcap": "LargeCap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "IEX": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "IGARASHI": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "IFBIND": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "KEI": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "PFC": {
+    "mcap": "LargeCap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "POLYCAB": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "POWERGRID": {
+    "mcap": "LargeCap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "SIEMENS": {
+    "mcap": "LargeCap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "VGUARD": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "WHIRLPOOL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "VOLTAMP": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "VOLTAS": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "ORIENTELEC": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "PIXTRANS": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "SCHNEIDER": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "IKIO": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "HPL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "SERVOTECH": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "BAJEL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "SALZERELEC": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "GEPIL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "MARINE": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "JPPOWER": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "GVT&D": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "POWERINDIA": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "CGPOWER": {
+    "mcap": "LargeCap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "PRECWIRE": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "RRKABEL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "HIRECT": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "QUADFUTURE": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "HONDAPOWER": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "TDPOWERSYS": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "DYCL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "GENUSPOWER": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "STLTECH": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "JSWENERGY": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "PTC": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "GMRP&UI": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "TORNTPOWER": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "GIPCL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "RPOWER": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "RTNPOWER": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "NHPC": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "TATAPOWER": {
+    "mcap": "LargeCap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "SJVN": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "TRANSRAILL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "CESC": {
+    "mcap": "Midcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": true
+  },
+  "BBL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "TARIL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "PARACABLES": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "KIRLOSENG": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "UNIVCABLES": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "INDOTECH": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "WEL": {
+    "mcap": "Smallcap",
+    "department": "Electricity /Power Sector",
+    "is_fno": false
+  },
+  "AJMERA": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "BOMDYEING": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "BRIGADE": {
+    "mcap": "Midcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "DLF": {
+    "mcap": "LargeCap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": true
+  },
+  "KOLTEPATIL": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "OBEROIRLTY": {
+    "mcap": "Midcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": true
+  },
+  "PHOENIXLTD": {
+    "mcap": "Midcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": true
+  },
+  "PRESTIGE": {
+    "mcap": "Midcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": true
+  },
+  "SUNTECK": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "LODHA": {
+    "mcap": "LargeCap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": true
+  },
+  "ASHIANA": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "PURVA": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "GODREJPROP": {
+    "mcap": "Midcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": true
+  },
+  "ANANTRAJ": {
+    "mcap": "Midcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "ABREL": {
+    "mcap": "Midcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "ARVSMART": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "GANESHHOUC": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "ARKADE": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "DBREALTY": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "SOBHA": {
+    "mcap": "Smallcap",
+    "department": "REAL ESTATE DEV",
+    "is_fno": false
+  },
+  "ASHOKA": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "DBL": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "JKIL": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "KPIL": {
+    "mcap": "Midcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "KEC": {
+    "mcap": "Midcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "KNRCON": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "PSPPROJECT": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "SEAMECLTD": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "VPRPL": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "PATELENG": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "WELENT": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "IRB": {
+    "mcap": "Midcap",
+    "department": "CONSTRUCTION",
+    "is_fno": true
+  },
+  "LIKHITHA": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "HGINFRA": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "SEPC": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "PNCINFRA": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "RAMKY": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "AFCONS": {
+    "mcap": "Midcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "AHLUCONT": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "CAPACITE": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "SIMPLEXINF": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "HCC": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "ANUP": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "LT": {
+    "mcap": "LargeCap",
+    "department": "CONSTRUCTION",
+    "is_fno": true
+  },
+  "MANINFRA": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "GRINFRA": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "JYOTISTRUC": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "RPEL": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "CEIGALL": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION",
+    "is_fno": false
+  },
+  "ACC": {
+    "mcap": "Midcap",
+    "department": "CEMENT",
+    "is_fno": true
+  },
+  "AMBUJACEM": {
+    "mcap": "LargeCap",
+    "department": "CEMENT",
+    "is_fno": true
+  },
+  "NUVOCO": {
+    "mcap": "Smallcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "HEIDELBERG": {
+    "mcap": "Smallcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "INDIACEM": {
+    "mcap": "Smallcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "JKCEMENT": {
+    "mcap": "Midcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "JKLKASHMI": {
+    "mcap": "Smallcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "PRSMJOHNSN": {
+    "mcap": "Smallcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "GRASIM": {
+    "mcap": "LargeCap",
+    "department": "CEMENT",
+    "is_fno": true
+  },
+  "SAGCEM": {
+    "mcap": "Smallcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "SHREECEM": {
+    "mcap": "LargeCap",
+    "department": "CEMENT",
+    "is_fno": true
+  },
+  "ULTRACEMCO": {
+    "mcap": "LargeCap",
+    "department": "CEMENT",
+    "is_fno": true
+  },
+  "MANGLMCEM": {
+    "mcap": "Smallcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "RAMCOIND": {
+    "mcap": "Smallcap",
+    "department": "CEMENT",
+    "is_fno": false
+  },
+  "AGI": {
+    "mcap": "Smallcap",
+    "department": "TILES/CERAMICS",
+    "is_fno": false
+  },
+  "POKARNA": {
+    "mcap": "Smallcap",
+    "department": "TILES/CERAMICS",
+    "is_fno": false
+  },
+  "CERA": {
+    "mcap": "Smallcap",
+    "department": "TILES/CERAMICS",
+    "is_fno": false
+  },
+  "HINDWAREAP": {
+    "mcap": "Smallcap",
+    "department": "TILES/CERAMICS",
+    "is_fno": false
+  },
+  "KAJARIACER": {
+    "mcap": "Smallcap",
+    "department": "TILES/CERAMICS",
+    "is_fno": false
+  },
+  "SOMANYCERA": {
+    "mcap": "Smallcap",
+    "department": "TILES/CERAMICS",
+    "is_fno": false
+  },
+  "ANDHRSUGAR": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "AVADHSUGAR": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "BALRAMCHIN": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "BANARISUG": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "DALMIASUG": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "DHAMPURSUG": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "DWARKESH": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "EIDPARRY": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "MAGADSUGAR": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "DCMSRIND": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "TRIVENI": {
+    "mcap": "Smallcap",
+    "department": "SUGAR",
+    "is_fno": false
+  },
+  "GLOBUSSPR": {
+    "mcap": "Smallcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "GMBREW": {
+    "mcap": "Smallcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "RADICO": {
+    "mcap": "Midcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "UBL": {
+    "mcap": "Midcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "SDBL": {
+    "mcap": "Smallcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "ASALCBR": {
+    "mcap": "Smallcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "UNITEDSPR": {
+    "mcap": "LargeCap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": true
+  },
+  "TI": {
+    "mcap": "Smallcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "ABDL": {
+    "mcap": "Smallcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "SULA": {
+    "mcap": "Smallcap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": false
+  },
+  "VBL": {
+    "mcap": "LargeCap",
+    "department": "ALCOHOL/SOFT DRINKS",
+    "is_fno": true
+  },
+  "DALBHARAT": {
+    "mcap": "Midcap",
+    "department": "CONGLOMERATE SUGAR/CEM",
+    "is_fno": true
+  },
+  "KCP": {
+    "mcap": "Smallcap",
+    "department": "CONGLOMERATE SUGAR/CEM",
+    "is_fno": false
+  },
+  "DCMSHRIRAM": {
+    "mcap": "Midcap",
+    "department": "CONGLOMERATE SUGAR/CEM",
+    "is_fno": false
+  },
+  "KESORAMIND": {
+    "mcap": "Smallcap",
+    "department": "CONGLOMERATE SUGAR/CEM",
+    "is_fno": false
+  },
+  "NIACL": {
+    "mcap": "Midcap",
+    "department": "INSURANCE",
+    "is_fno": false
+  },
+  "NAM-INDIA": {
+    "mcap": "Midcap",
+    "department": "INSURANCE",
+    "is_fno": false
+  },
+  "SBILIFE": {
+    "mcap": "LargeCap",
+    "department": "INSURANCE",
+    "is_fno": true
+  },
+  "MEDIASSIST": {
+    "mcap": "Smallcap",
+    "department": "INSURANCE",
+    "is_fno": false
+  },
+  "RELIGARE": {
+    "mcap": "Smallcap",
+    "department": "INSURANCE",
+    "is_fno": false
+  },
+  "HDFCLIFE": {
+    "mcap": "LargeCap",
+    "department": "INSURANCE",
+    "is_fno": true
+  },
+  "GODIGIT": {
+    "mcap": "Midcap",
+    "department": "INSURANCE",
+    "is_fno": false
+  },
+  "GICRE": {
+    "mcap": "Midcap",
+    "department": "INSURANCE",
+    "is_fno": false
+  },
+  "NIVABUPA": {
+    "mcap": "Smallcap",
+    "department": "INSURANCE",
+    "is_fno": false
+  },
+  "MFSL": {
+    "mcap": "Midcap",
+    "department": "INSURANCE",
+    "is_fno": true
+  },
+  "LICI": {
+    "mcap": "LargeCap",
+    "department": "INSURANCE",
+    "is_fno": true
+  },
+  "ICICIPRULI": {
+    "mcap": "Midcap",
+    "department": "INSURANCE",
+    "is_fno": true
+  },
+  "ICICIGI": {
+    "mcap": "Midcap",
+    "department": "INSURANCE",
+    "is_fno": true
+  },
+  "STARHEALTH": {
+    "mcap": "Midcap",
+    "department": "INSURANCE",
+    "is_fno": false
+  },
+  "JIOFIN": {
+    "mcap": "LargeCap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": true
+  },
+  "HDFCAMC": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": true
+  },
+  "ABCAPITAL": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": true
+  },
+  "360ONE": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": true
+  },
+  "NUVAMA": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "DOLATALGO": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "GEOJITFSL": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "ANGELONE": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": true
+  },
+  "ANANDRATHI": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "ISEC": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "JMFINANCIL": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "MOTILALOF S": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "CAMS": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": true
+  },
+  "UTIAMC": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "DAMCAPITAL": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "ABSLAMC": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "AIIL": {
+    "mcap": "Midcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "PRUDENT": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "SHAREINDIA": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "INDOTHAI": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "MONARCH": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "EDELWEISS": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "CHOICEIN": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "IIFLCAPS": {
+    "mcap": "Smallcap",
+    "department": "BROKERS/ADVISORY",
+    "is_fno": false
+  },
+  "AKZOINDIA": {
+    "mcap": "Midcap",
+    "department": "PAINTS",
+    "is_fno": false
+  },
+  "ASIANPAINT": {
+    "mcap": "LargeCap",
+    "department": "PAINTS",
+    "is_fno": true
+  },
+  "BERGEPAINT": {
+    "mcap": "Midcap",
+    "department": "PAINTS",
+    "is_fno": false
+  },
+  "INDIGOPNTS": {
+    "mcap": "Smallcap",
+    "department": "PAINTS",
+    "is_fno": false
+  },
+  "KANSAINER": {
+    "mcap": "Midcap",
+    "department": "PAINTS",
+    "is_fno": false
+  },
+  "SIRCA": {
+    "mcap": "Smallcap",
+    "department": "PAINTS",
+    "is_fno": false
+  },
+  "CENTURYPLY": {
+    "mcap": "Midcap",
+    "department": "PLYWOOD",
+    "is_fno": false
+  },
+  "GREENLAM": {
+    "mcap": "Smallcap",
+    "department": "PLYWOOD",
+    "is_fno": false
+  },
+  "GREENPANEL": {
+    "mcap": "Smallcap",
+    "department": "PLYWOOD",
+    "is_fno": false
+  },
+  "GREENPLY": {
+    "mcap": "Smallcap",
+    "department": "PLYWOOD",
+    "is_fno": false
+  },
+  "APOLLOPIPE": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "ASTRAL": {
+    "mcap": "Midcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": true
+  },
+  "FINPIPE": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "KINGFA": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "NILKAMAL": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "SKIPPER": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "PRINCEPIPE": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "SHAILY": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "SUPREMEIND": {
+    "mcap": "Midcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": true
+  },
+  "XPROINDIA": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "DDEVPLSTIK": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "STYRENIX": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "CELLO": {
+    "mcap": "Smallcap",
+    "department": "PLASTIC ITEMS",
+    "is_fno": false
+  },
+  "BAYERCROP": {
+    "mcap": "Midcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "CHAMBLFERT": {
+    "mcap": "Midcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": true
+  },
+  "COROMANDEL": {
+    "mcap": "Midcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "DEEPAKFERT": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "DHANUKA": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "EXCELINDUS": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "FACT": {
+    "mcap": "Midcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "GODREJAGRO": {
+    "mcap": "Midcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "GNFC": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "INSECTICID": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "MADRASFERT": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "PIIND": {
+    "mcap": "Midcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": true
+  },
+  "RALLIS": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "RCF": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "NFL": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "PARADEEP": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "GSFC": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "MBAPL": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "IPL": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "SPIC": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "MANGCHEFER": {
+    "mcap": "Smallcap",
+    "department": "FERTILISERS/CROP Protection",
+    "is_fno": false
+  },
+  "ABFRL": {
+    "mcap": "Midcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": true
+  },
+  "ARVIND": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "ARVINDFASN": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "MANYAVAR": {
+    "mcap": "Midcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "CENTENKA": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "CANTABIL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "HIMATSEIDE": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "GOKEX": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "SANGAMIND": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "MONTECARLO": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "LUXIND": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "PAGEIND": {
+    "mcap": "Midcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": true
+  },
+  "WELSPUNLIV": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "ICIL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "GRWRHITECH": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "KPRMILL": {
+    "mcap": "Midcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "GARFIBRES": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "FILATEX": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "RSWM": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "RAYMOND": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "NITINSPIN": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "SIYSIL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "SPAL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "TRIDENT": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "VTL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "KITEX": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "DOLLAR": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "RUPA": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "KKCL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "PDSL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "GOCOLORS": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "KALAMANDIR": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "RAYMONDLSL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "SANATHAN": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "PGIL": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "JINDWORLD": {
+    "mcap": "Smallcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "LMW": {
+    "mcap": "Midcap",
+    "department": "FASHION/TEXTILE",
+    "is_fno": false
+  },
+  "BAJAJ-AUTO": {
+    "mcap": "LargeCap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": true
+  },
+  "ATULAUTO": {
+    "mcap": "Smallcap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": false
+  },
+  "FORCEMOT": {
+    "mcap": "Smallcap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": false
+  },
+  "HEROMOTOCO": {
+    "mcap": "Midcap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": true
+  },
+  "MAHSCOOTER": {
+    "mcap": "Smallcap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": false
+  },
+  "MARUTI": {
+    "mcap": "LargeCap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": true
+  },
+  "TATAMOTORS": {
+    "mcap": "LargeCap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": true
+  },
+  "TVSMOTOR": {
+    "mcap": "LargeCap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": true
+  },
+  "M&M": {
+    "mcap": "LargeCap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": true
+  },
+  "HYUNDAI": {
+    "mcap": "LargeCap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": false
+  },
+  "OLAELEC": {
+    "mcap": "Midcap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": false
+  },
+  "SMLISUZU": {
+    "mcap": "Smallcap",
+    "department": "TWO/THREE/FOUR WHEELERS",
+    "is_fno": false
+  },
+  "ACE": {
+    "mcap": "Smallcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": false
+  },
+  "BHARATFORG": {
+    "mcap": "Midcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": true
+  },
+  "EICHERMOT": {
+    "mcap": "LargeCap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": true
+  },
+  "ESCORTS": {
+    "mcap": "Midcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": false
+  },
+  "MIDHANI": {
+    "mcap": "Smallcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": false
+  },
+  "VSTTILLERS": {
+    "mcap": "Smallcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": false
+  },
+  "SANGHVIMOV": {
+    "mcap": "Smallcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": false
+  },
+  "SWARAJENG": {
+    "mcap": "Smallcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": false
+  },
+  "RKFORGE": {
+    "mcap": "Smallcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": false
+  },
+  "ASHOKLEY": {
+    "mcap": "Midcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": true
+  },
+  "OLECTRA": {
+    "mcap": "Smallcap",
+    "department": "HEAVY VEHICLES",
+    "is_fno": false
+  },
+  "AUTOAXLES": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "BALKRISIND": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": true
+  },
+  "BANCOINDIA": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "BOSCHLTD": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": true
+  },
+  "CEATLTD": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "GABRIEL": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "GNA": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "GREAVESCOT": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "GULFOILLUB": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "JTEKTINDIA": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SHANTIGEAR": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "UNIPARTS": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SIS": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "LUMAXTECH": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "MINDACORP": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "MRF": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SOTL": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "JBMA": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "CRAFTSMAN": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SONACOMS": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": true
+  },
+  "PRICOLTD": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "PRECAM": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "RICOAUTO": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SUBROS": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SUNDRMFAST": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "TALBROAUTO": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "WHEELS": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "FIEMIND": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SHRIPISTON": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "ENDURANCE": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "UNOMINDA": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": true
+  },
+  "JKTYRE": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SSWL": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SHARDAMOTR": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "LUMAXIND": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "DYNAMATECH": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SANDHAR": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "JAMNAAUTO": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "TVSSRICH A": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "FMGOETZE": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "NDRAUTO": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "ZF CV INDIA": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "VARROC": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "APOLLOTYRE": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SUNCLAY": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SANSERA": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SJS": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "RANEHOLDIN": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "MSUMI": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "TVSHLTD": {
+    "mcap": "Midcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "ASKAUTOLTD": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "DIVGIITTS": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "SUPRAJIT": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "HAPPYFORGE": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "MOTHERSON": {
+    "mcap": "LargeCap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": true
+  },
+  "RAJRATAN": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "LGBBROSLTD": {
+    "mcap": "Smallcap",
+    "department": "AUTO COMPONENTS",
+    "is_fno": false
+  },
+  "ARE&M": {
+    "mcap": "Midcap",
+    "department": "BATTERY",
+    "is_fno": false
+  },
+  "EVEREADY": {
+    "mcap": "Smallcap",
+    "department": "BATTERY",
+    "is_fno": false
+  },
+  "EXIDEIND": {
+    "mcap": "Midcap",
+    "department": "BATTERY",
+    "is_fno": true
+  },
+  "HBLENGINE": {
+    "mcap": "Smallcap",
+    "department": "BATTERY",
+    "is_fno": false
+  },
+  "BBTC": {
+    "mcap": "Smallcap",
+    "department": "HOLDING COMPANIES",
+    "is_fno": false
+  },
+  "BFUTILITIE": {
+    "mcap": "Smallcap",
+    "department": "HOLDING COMPANIES",
+    "is_fno": false
+  },
+  "BAJAJHLDNG": {
+    "mcap": "LargeCap",
+    "department": "HOLDING COMPANIES",
+    "is_fno": false
+  },
+  "TATAINVEST": {
+    "mcap": "Midcap",
+    "department": "HOLDING COMPANIES",
+    "is_fno": false
+  },
+  "JSWHL": {
+    "mcap": "Midcap",
+    "department": "HOLDING COMPANIES",
+    "is_fno": false
+  },
+  "KICL": {
+    "mcap": "Smallcap",
+    "department": "HOLDING COMPANIES",
+    "is_fno": false
+  },
+  "BFINVEST": {
+    "mcap": "Smallcap",
+    "department": "HOLDING COMPANIES",
+    "is_fno": false
+  },
+  "HFCL": {
+    "mcap": "Smallcap",
+    "department": "TELECOM",
+    "is_fno": true
+  },
+  "BBOX": {
+    "mcap": "Smallcap",
+    "department": "TELECOM",
+    "is_fno": false
+  },
+  "TATACOMM": {
+    "mcap": "Midcap",
+    "department": "TELECOM",
+    "is_fno": true
+  },
+  "VINDHYATEL": {
+    "mcap": "Smallcap",
+    "department": "TELECOM",
+    "is_fno": false
+  },
+  "NELCO": {
+    "mcap": "Smallcap",
+    "department": "TELECOM",
+    "is_fno": false
+  },
+  "BHARTIARTL": {
+    "mcap": "LargeCap",
+    "department": "TELECOM",
+    "is_fno": true
+  },
+  "RELIANCE": {
+    "mcap": "LargeCap",
+    "department": "TELECOM",
+    "is_fno": true
+  },
+  "INDUSTOWER": {
+    "mcap": "LargeCap",
+    "department": "TELECOM",
+    "is_fno": true
+  },
+  "TEJASNET": {
+    "mcap": "Smallcap",
+    "department": "TELECOM",
+    "is_fno": false
+  },
+  "BHARTIHEX A": {
+    "mcap": "Midcap",
+    "department": "TELECOM",
+    "is_fno": false
+  },
+  "BPCL": {
+    "mcap": "LargeCap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": true
+  },
+  "CASTROLIND": {
+    "mcap": "Midcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": false
+  },
+  "CHENNPETRO": {
+    "mcap": "Smallcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": false
+  },
+  "GAIL": {
+    "mcap": "LargeCap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": true
+  },
+  "GUJGASLTD": {
+    "mcap": "Midcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": false
+  },
+  "IGL": {
+    "mcap": "Midcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": true
+  },
+  "IOC": {
+    "mcap": "LargeCap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": true
+  },
+  "MGL": {
+    "mcap": "Smallcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": true
+  },
+  "MRPL": {
+    "mcap": "Midcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": false
+  },
+  "OIL": {
+    "mcap": "Midcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": true
+  },
+  "ONGC": {
+    "mcap": "LargeCap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": true
+  },
+  "SPLPETRO": {
+    "mcap": "Smallcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": false
+  },
+  "PETRONET": {
+    "mcap": "Midcap",
+    "department": "OIL/GAS COMPANIES",
+    "is_fno": true
+  },
+  "PVRINOX": {
+    "mcap": "Smallcap",
+    "department": "OTT/DIGITAL ENTERTAINMENT",
+    "is_fno": false
+  },
+  "SAREGAMA": {
+    "mcap": "Smallcap",
+    "department": "OTT/DIGITAL ENTERTAINMENT",
+    "is_fno": false
+  },
+  "TIPSFILMS": {
+    "mcap": "Smallcap",
+    "department": "OTT/DIGITAL ENTERTAINMENT",
+    "is_fno": false
+  },
+  "SUNTV": {
+    "mcap": "Midcap",
+    "department": "OTT/DIGITAL ENTERTAINMENT",
+    "is_fno": false
+  },
+  "TIPSMUSIC": {
+    "mcap": "Smallcap",
+    "department": "OTT/DIGITAL ENTERTAINMENT",
+    "is_fno": false
+  },
+  "CARERATING": {
+    "mcap": "Smallcap",
+    "department": "RATING AGENCY",
+    "is_fno": false
+  },
+  "CRISIL": {
+    "mcap": "Midcap",
+    "department": "RATING AGENCY",
+    "is_fno": false
+  },
+  "ICRA": {
+    "mcap": "Smallcap",
+    "department": "RATING AGENCY",
+    "is_fno": false
+  },
+  "BUTTERFLY": {
+    "mcap": "Smallcap",
+    "department": "COOKERS",
+    "is_fno": false
+  },
+  "STOVEKRAFT": {
+    "mcap": "Smallcap",
+    "department": "COOKERS",
+    "is_fno": false
+  },
+  "TTKPRESTIG": {
+    "mcap": "Smallcap",
+    "department": "COOKERS",
+    "is_fno": false
+  },
+  "AVANTIFEED": {
+    "mcap": "Smallcap",
+    "department": "FISHERIES/SHRIMPS",
+    "is_fno": false
+  },
+  "APEX": {
+    "mcap": "Smallcap",
+    "department": "FISHERIES/SHRIMPS",
+    "is_fno": false
+  },
+  "CHALET": {
+    "mcap": "Midcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "EIHOTEL": {
+    "mcap": "Midcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "INDHOTEL": {
+    "mcap": "LargeCap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": true
+  },
+  "TAJGVK": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "LEMONTREE": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "ORIENTHOT": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "PARKHOTELS": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "ITC HOTELS": {
+    "mcap": "Midcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "EIHAHOTELS": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "VENTIVE": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "SAMHI": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "ITDC": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "THOMASCOOK": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "MHRIL": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "IMAGICAA": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "WONDERLA": {
+    "mcap": "Smallcap",
+    "department": "HOTELS/LEISURE",
+    "is_fno": false
+  },
+  "ADORWELD": {
+    "mcap": "Smallcap",
+    "department": "GRAPHITE RODS/WELDING",
+    "is_fno": false
+  },
+  "ESABINDIA": {
+    "mcap": "Smallcap",
+    "department": "GRAPHITE RODS/WELDING",
+    "is_fno": false
+  },
+  "GRAPHITE": {
+    "mcap": "Smallcap",
+    "department": "GRAPHITE RODS/WELDING",
+    "is_fno": false
+  },
+  "HEG": {
+    "mcap": "Smallcap",
+    "department": "GRAPHITE RODS/WELDING",
+    "is_fno": false
+  },
+  "COSMOFIRST": {
+    "mcap": "Smallcap",
+    "department": "PACKAGING",
+    "is_fno": false
+  },
+  "EPL": {
+    "mcap": "Smallcap",
+    "department": "PACKAGING",
+    "is_fno": false
+  },
+  "TCPLPACK": {
+    "mcap": "Smallcap",
+    "department": "PACKAGING",
+    "is_fno": false
+  },
+  "JINDALPOLY": {
+    "mcap": "Smallcap",
+    "department": "PACKAGING",
+    "is_fno": false
+  },
+  "MOLDTKPAC": {
+    "mcap": "Smallcap",
+    "department": "PACKAGING",
+    "is_fno": false
+  },
+  "POLYPLEX": {
+    "mcap": "Smallcap",
+    "department": "PACKAGING",
+    "is_fno": false
+  },
+  "UFLEX": {
+    "mcap": "Smallcap",
+    "department": "PACKAGING",
+    "is_fno": false
+  },
+  "BLUESTARCO": {
+    "mcap": "Midcap",
+    "department": "AC MAKERS",
+    "is_fno": true
+  },
+  "JCHAC": {
+    "mcap": "Smallcap",
+    "department": "AC MAKERS",
+    "is_fno": false
+  },
+  "SYMPHONY": {
+    "mcap": "Smallcap",
+    "department": "AC MAKERS",
+    "is_fno": false
+  },
+  "AMBER": {
+    "mcap": "Midcap",
+    "department": "AC MAKERS",
+    "is_fno": true
+  },
+  "KRN": {
+    "mcap": "Smallcap",
+    "department": "AC MAKERS",
+    "is_fno": false
+  },
+  "EPACK": {
+    "mcap": "Smallcap",
+    "department": "AC MAKERS",
+    "is_fno": false
+  },
+  "ADFFOODS": {
+    "mcap": "Smallcap",
+    "department": "PACKAGED FOOD",
+    "is_fno": false
+  },
+  "GODFRYPHLP": {
+    "mcap": "Midcap",
+    "department": "CIGARETTES",
+    "is_fno": false
+  },
+  "VSTIND": {
+    "mcap": "Smallcap",
+    "department": "CIGARETTES",
+    "is_fno": false
+  },
+  "GRAVITA": {
+    "mcap": "Smallcap",
+    "department": "CARBON PRODUCTS",
+    "is_fno": false
+  },
+  "PCBL": {
+    "mcap": "Midcap",
+    "department": "CARBON PRODUCTS",
+    "is_fno": false
+  },
+  "RAIN": {
+    "mcap": "Smallcap",
+    "department": "CARBON PRODUCTS",
+    "is_fno": false
+  },
+  "EVERESTIND": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION PRODUCTS",
+    "is_fno": false
+  },
+  "HIL": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION PRODUCTS",
+    "is_fno": false
+  },
+  "INDIANHUME": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION PRODUCTS",
+    "is_fno": false
+  },
+  "ITDCEM": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION PRODUCTS",
+    "is_fno": false
+  },
+  "MAHSEAMLES": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION PRODUCTS",
+    "is_fno": false
+  },
+  "VISAKAIND": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION PRODUCTS",
+    "is_fno": false
+  },
+  "WELCORP": {
+    "mcap": "Midcap",
+    "department": "CONSTRUCTION PRODUCTS",
+    "is_fno": false
+  },
+  "INTERARCH": {
+    "mcap": "Smallcap",
+    "department": "CONSTRUCTION PRODUCTS",
+    "is_fno": false
+  },
+  "ANDHRAPAP": {
+    "mcap": "Smallcap",
+    "department": "PAPER",
+    "is_fno": false
+  },
+  "JKPAPER": {
+    "mcap": "Smallcap",
+    "department": "PAPER",
+    "is_fno": false
+  },
+  "ORIENTPPR": {
+    "mcap": "Smallcap",
+    "department": "PAPER",
+    "is_fno": false
+  },
+  "HUHTAMAKI": {
+    "mcap": "Smallcap",
+    "department": "PAPER",
+    "is_fno": false
+  },
+  "SATIA": {
+    "mcap": "Smallcap",
+    "department": "PAPER",
+    "is_fno": false
+  },
+  "SESHAPAPER": {
+    "mcap": "Smallcap",
+    "department": "PAPER",
+    "is_fno": false
+  },
+  "TNPL": {
+    "mcap": "Smallcap",
+    "department": "PAPER",
+    "is_fno": false
+  },
+  "WSTCSTPAPR": {
+    "mcap": "Smallcap",
+    "department": "PAPER",
+    "is_fno": false
+  },
+  "APLAPOLLO": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "JSWSTEEL": {
+    "mcap": "LargeCap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "NMDC": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "JINDALSAW": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "ORISSAMINE": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "GALLANTT": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "PRAKASH": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "GPIL": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "SUNFLAG": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "SAIL": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "KIOCL": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "HINDALCO": {
+    "mcap": "LargeCap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "TATASTEEL": {
+    "mcap": "LargeCap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "SARDAEN": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "SHYAMMETL": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "MMTC": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "HINDZINC": {
+    "mcap": "LargeCap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "ELECTCAST": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "SURYAROSNI": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "SANDUMA": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "JAIBALAJI": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "STEELCAS": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "PTCIL": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "LLOYDSME": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "BANSALWIRE": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "AEROFLEX": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "JTLIND": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "VSSL": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "RATNAMANI": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "KIRLOSIND": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "JAYNECOIND": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "VENUSPIPES": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "HITECH": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "KSL": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "JINDALSTEL": {
+    "mcap": "LargeCap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "JSL": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "MOIL": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "MAITHANALL": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "ASHAPURMIN": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "TEGA": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "IMFA": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "HINDCOPPER": {
+    "mcap": "Midcap",
+    "department": "STEEL/METALS",
+    "is_fno": true
+  },
+  "HARIOMPIPE": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "USHAMART": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "BALUFORGE": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "GMDCLTD": {
+    "mcap": "Smallcap",
+    "department": "STEEL/METALS",
+    "is_fno": false
+  },
+  "CARBORUNIV": {
+    "mcap": "Midcap",
+    "department": "TECHNICAL CERAMIC",
+    "is_fno": false
+  },
+  "GRINDWELL": {
+    "mcap": "Midcap",
+    "department": "TECHNICAL CERAMIC",
+    "is_fno": false
+  },
+  "AIAENG": {
+    "mcap": "Midcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "GODREJIND": {
+    "mcap": "Midcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "LAOPALA": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "LINDEINDIA": {
+    "mcap": "Midcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "QUESS": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "TEAMLEASE": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "TIINDIA": {
+    "mcap": "Midcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": true
+  },
+  "WESTLIFE": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "DREAMFOLKS": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "JUSTDIAL": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "GAEL": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "EUREKAFORB": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "IGIL": {
+    "mcap": "Midcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "TIL": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "HONASA": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "REDTAPE": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "DBCORP": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "MPSLTD": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "JAGRAN": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "SFL": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "3MINDIA": {
+    "mcap": "Midcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "CARYSIL": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "MAYURUNIQ": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "ETHOSLTD": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "INDGN": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "GENSOL": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "STYLAMIND": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "KDDL": {
+    "mcap": "Smallcap",
+    "department": "MISCELLANEOUS",
+    "is_fno": false
+  },
+  "SAFARI": {
+    "mcap": "Smallcap",
+    "department": "LUGGAGE",
+    "is_fno": false
+  },
+  "VIPIND": {
+    "mcap": "Smallcap",
+    "department": "LUGGAGE",
+    "is_fno": false
+  },
+  "SGLTL": {
+    "mcap": "Smallcap",
+    "department": "GLASS",
+    "is_fno": false
+  },
+  "HLEGLAS": {
+    "mcap": "Smallcap",
+    "department": "GLASS",
+    "is_fno": false
+  },
+  "ASAHIINDIA": {
+    "mcap": "Smallcap",
+    "department": "GLASS",
+    "is_fno": false
+  },
+  "BOROLTD": {
+    "mcap": "Smallcap",
+    "department": "GLASS",
+    "is_fno": false
+  },
+  "TEXRAIL": {
+    "mcap": "Smallcap",
+    "department": "RAILWAYS",
+    "is_fno": false
+  },
+  "TEXINFRA": {
+    "mcap": "Smallcap",
+    "department": "RAILWAYS",
+    "is_fno": false
+  },
+  "RAILTEL": {
+    "mcap": "Smallcap",
+    "department": "RAILWAYS",
+    "is_fno": false
+  },
+  "IRFC": {
+    "mcap": "LargeCap",
+    "department": "RAILWAYS",
+    "is_fno": true
+  },
+  "RITES": {
+    "mcap": "Smallcap",
+    "department": "RAILWAYS",
+    "is_fno": false
+  },
+  "TITAGARH": {
+    "mcap": "Smallcap",
+    "department": "RAILWAYS",
+    "is_fno": false
+  },
+  "RVNL": {
+    "mcap": "Midcap",
+    "department": "RAILWAYS",
+    "is_fno": true
+  },
+  "IRCON": {
+    "mcap": "Smallcap",
+    "department": "RAILWAYS",
+    "is_fno": false
+  },
+  "JWL": {
+    "mcap": "Smallcap",
+    "department": "RAILWAYS",
+    "is_fno": false
+  },
+  "RHIM": {
+    "mcap": "Smallcap",
+    "department": "REFRACTORIES",
+    "is_fno": false
+  },
+  "VESUVIUS": {
+    "mcap": "Smallcap",
+    "department": "REFRACTORIES",
+    "is_fno": false
+  },
+  "IFGLEXPOR": {
+    "mcap": "Smallcap",
+    "department": "REFRACTORIES",
+    "is_fno": false
+  },
+  "CCL": {
+    "mcap": "Smallcap",
+    "department": "TEA/COFFEE",
+    "is_fno": false
+  },
+  "ROSSELLIND": {
+    "mcap": "Smallcap",
+    "department": "TEA/COFFEE",
+    "is_fno": false
+  },
+  "ALLCARGO": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "SNOWMAN": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "TCI": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "TCIEXP": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "VRLLOG": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "NAVKARCORP": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "MAHLOG": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "BLUEDART": {
+    "mcap": "Midcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "TVSSCS": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "GATEWAY": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "DELHIVERY": {
+    "mcap": "Midcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": true
+  },
+  "JSWINFRA": {
+    "mcap": "Midcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "AEGISLOG": {
+    "mcap": "Midcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "GPPL": {
+    "mcap": "Smallcap",
+    "department": "TRANSPORT & LOGISTICS",
+    "is_fno": false
+  },
+  "MAZDOCK": {
+    "mcap": "Midcap",
+    "department": "SHIP BUILDERS",
+    "is_fno": true
+  },
+  "COCHINSHIP": {
+    "mcap": "Midcap",
+    "department": "SHIP BUILDERS",
+    "is_fno": false
+  },
+  "GRSE": {
+    "mcap": "Midcap",
+    "department": "SHIP BUILDERS",
+    "is_fno": false
+  },
+  "GESHIP": {
+    "mcap": "Smallcap",
+    "department": "SHIP BUILDERS",
+    "is_fno": false
+  },
+  "WABAG": {
+    "mcap": "Smallcap",
+    "department": "WATER/WASTE",
+    "is_fno": false
+  },
+  "IONEXCHANG": {
+    "mcap": "Smallcap",
+    "department": "WATER/WASTE",
+    "is_fno": false
+  },
+  "AWHCL": {
+    "mcap": "Smallcap",
+    "department": "WATER/WASTE",
+    "is_fno": false
+  },
+  "EMSLIMITED": {
+    "mcap": "Smallcap",
+    "department": "WATER/WASTE",
+    "is_fno": false
+  },
+  "JITFINFRA": {
+    "mcap": "Smallcap",
+    "department": "WATER/WASTE",
+    "is_fno": false
+  },
+  "EIEL": {
+    "mcap": "Smallcap",
+    "department": "WATER/WASTE",
+    "is_fno": false
+  },
+  "GANE COS": {
+    "mcap": "Smallcap",
+    "department": "WATER/WASTE",
+    "is_fno": false
+  },
+  "BSE": {
+    "mcap": "Midcap",
+    "department": "EXCHANGE/DEPOSITORY",
+    "is_fno": true
+  },
+  "CDSL": {
+    "mcap": "Midcap",
+    "department": "EXCHANGE/DEPOSITORY",
+    "is_fno": true
+  },
+  "MCX": {
+    "mcap": "Midcap",
+    "department": "EXCHANGE/DEPOSITORY",
+    "is_fno": true
+  },
+  "DELTACORP": {
+    "mcap": "Smallcap",
+    "department": "ONLINE GAMING",
+    "is_fno": false
+  },
+  "NAZARA": {
+    "mcap": "Smallcap",
+    "department": "ONLINE GAMING",
+    "is_fno": false
+  },
+  "BATAINDIA": {
+    "mcap": "Midcap",
+    "department": "FOOTWEAR",
+    "is_fno": false
+  },
+  "METROBRAND": {
+    "mcap": "Midcap",
+    "department": "FOOTWEAR",
+    "is_fno": false
+  },
+  "RELAXO": {
+    "mcap": "Smallcap",
+    "department": "FOOTWEAR",
+    "is_fno": false
+  },
+  "CAMPUS": {
+    "mcap": "Smallcap",
+    "department": "FOOTWEAR",
+    "is_fno": false
+  },
+  "TITAN": {
+    "mcap": "LargeCap",
+    "department": "JEWELLERY",
+    "is_fno": true
+  },
+  "KALYANKJIL": {
+    "mcap": "Midcap",
+    "department": "JEWELLERY",
+    "is_fno": true
+  },
+  "THANGAMAYL": {
+    "mcap": "Smallcap",
+    "department": "JEWELLERY",
+    "is_fno": false
+  },
+  "SENCO": {
+    "mcap": "Smallcap",
+    "department": "JEWELLERY",
+    "is_fno": false
+  },
+  "VAIBHAVG BL": {
+    "mcap": "Smallcap",
+    "department": "JEWELLERY",
+    "is_fno": false
+  },
+  "SKYGOLD": {
+    "mcap": "Smallcap",
+    "department": "JEWELLERY",
+    "is_fno": false
+  },
+  "GOLDIAM": {
+    "mcap": "Smallcap",
+    "department": "JEWELLERY",
+    "is_fno": false
+  },
+  "DPABHUSHAN": {
+    "mcap": "Smallcap",
+    "department": "JEWELLERY",
+    "is_fno": false
+  },
+  "PNGJL": {
+    "mcap": "Smallcap",
+    "department": "JEWELLERY",
+    "is_fno": false
+  },
+  "MOTISONS": {
+    "mcap": "Smallcap",
+    "department": "JEWELLERY",
+    "is_fno": false
+  },
+  "MTARTECH": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "PARAS": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "HAL": {
+    "mcap": "LargeCap",
+    "department": "DEFENSE",
+    "is_fno": true
+  },
+  "BDL": {
+    "mcap": "Midcap",
+    "department": "DEFENSE",
+    "is_fno": true
+  },
+  "IDEAFORGE": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "BEML": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "ZENTEC": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "PREMEXPLN": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "DATAPATTNS": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "ASTRAMICRO": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "APOLLO": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "DCXINDIA": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "UNIMECH": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "AVANTEL": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "CYIENTDLM": {
+    "mcap": "Smallcap",
+    "department": "DEFENSE",
+    "is_fno": false
+  },
+  "SCHAEFFLER": {
+    "mcap": "Midcap",
+    "department": "BEARINGS",
+    "is_fno": false
+  },
+  "SKFINDIA": {
+    "mcap": "Midcap",
+    "department": "BEARINGS",
+    "is_fno": false
+  },
+  "TIMKEN": {
+    "mcap": "Midcap",
+    "department": "BEARINGS",
+    "is_fno": false
+  },
+  "NRBBEARING": {
+    "mcap": "Smallcap",
+    "department": "BEARINGS",
+    "is_fno": false
+  },
+  "KSB": {
+    "mcap": "Smallcap",
+    "department": "PUMPS",
+    "is_fno": false
+  },
+  "KIRLOSBROS": {
+    "mcap": "Smallcap",
+    "department": "PUMPS",
+    "is_fno": false
+  },
+  "SHAKTIPUMP": {
+    "mcap": "Smallcap",
+    "department": "PUMPS",
+    "is_fno": false
+  },
+  "KOKUYOCMLN": {
+    "mcap": "Smallcap",
+    "department": "STATIONERY/PRINTING",
+    "is_fno": false
+  },
+  "DOMS": {
+    "mcap": "Midcap",
+    "department": "STATIONERY/PRINTING",
+    "is_fno": false
+  },
+  "FLAIR": {
+    "mcap": "Smallcap",
+    "department": "STATIONERY/PRINTING",
+    "is_fno": false
+  },
+  "NAVNETEDUL": {
+    "mcap": "Smallcap",
+    "department": "STATIONERY/PRINTING",
+    "is_fno": false
+  },
+  "VMM": {
+    "mcap": "Midcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "NYKAA": {
+    "mcap": "Midcap",
+    "department": "Retail",
+    "is_fno": true
+  },
+  "SHOPERSTOP": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "TRENT": {
+    "mcap": "LargeCap",
+    "department": "Retail",
+    "is_fno": true
+  },
+  "MEDPLUS": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "STANLEY": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "DMART": {
+    "mcap": "LargeCap",
+    "department": "Retail",
+    "is_fno": true
+  },
+  "VMART": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "V2RETAIL": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "STYLEBAAZA": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "EMIL": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "AVL": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "LANDMARK": {
+    "mcap": "Smallcap",
+    "department": "Retail",
+    "is_fno": false
+  },
+  "ELECON": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "PRAJIND": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "EXICOM": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "TIMETECHNO": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "THEJO": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "ISGEC": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "THERMAX": {
+    "mcap": "Midcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "TRITURBINE": {
+    "mcap": "Midcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "KIRL PNU": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "HMT": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "ROLEXRINGS": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "ELGIEQUIP": {
+    "mcap": "Midcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "HARSHA": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "SBCL": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "INGERRAND": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "JASH": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "PENIND": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "POWERMECH": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "ENGINERSIN": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "TECHNOE": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "AXISCADES": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "GOODLUCK": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "INOXINDIA": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "JYOTICNC": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "LLOYDSENGG": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "PITTIENG": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "AZAD": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "WENDT": {
+    "mcap": "Smallcap",
+    "department": "ENGINEERING/CAPEX",
+    "is_fno": false
+  },
+  "SWSOLAR": {
+    "mcap": "Smallcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "BORORENEW": {
+    "mcap": "Smallcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "WEBELSOLAR": {
+    "mcap": "Smallcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "INOXWIND": {
+    "mcap": "Midcap",
+    "department": "RENEWABLES",
+    "is_fno": true
+  },
+  "INOXGREEN": {
+    "mcap": "Smallcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "KPIGREEN": {
+    "mcap": "Smallcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "SUZLON": {
+    "mcap": "Midcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "NTPCGREEN": {
+    "mcap": "Midcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "ACMESOLAR": {
+    "mcap": "Smallcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "KPEL": {
+    "mcap": "Smallcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "WAAREEENER": {
+    "mcap": "Midcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "PREMIERENE": {
+    "mcap": "Midcap",
+    "department": "RENEWABLES",
+    "is_fno": false
+  },
+  "LICHS GFIN": {
+    "mcap": "Unknown",
+    "department": "Unknown",
+    "is_fno": true
+  },
+  "POLICYBZ R": {
+    "mcap": "Unknown",
+    "department": "Unknown",
+    "is_fno": true
+  },
+  "TORNT PHARM": {
+    "mcap": "Unknown",
+    "department": "Unknown",
+    "is_fno": true
+  }
+}
