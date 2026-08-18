@@ -13,7 +13,6 @@ import logging
 import sys
 import argparse
 from datetime import datetime, timedelta
-from pathlib import Path
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
@@ -106,7 +105,7 @@ class StockScreener:
         """
         # Use today's date - NSE publishes same-day data after market close
         # The fetcher will gracefully skip if data is not yet available
-        to_date = datetime.now()
+        to_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
         # Check if we have cached data and determine mode
         if self.mode == 'incremental' or (self.mode == 'auto' and ticker):
@@ -118,19 +117,14 @@ class StockScreener:
                 logger.info(f"Incremental mode: Fetching from {from_date.date()} to {to_date.date()}")
                 return from_date, to_date, True
 
-        # Initial mode: fetch full historical data
+        # Initial mode: fetch full historical data (~2 years = ~500 trading days)
+        # 730 calendar days covers ~500 trading days accounting for
+        # weekends and market holidays
+        history_calendar_days = 730
         lookback_days = self.config.get('lookback_days_display', 60)
         volume_ma_period = self.config.get('volume_ma_period', 36)
-        weekly_wma_period = self.config.get('weekly_wma_period', 30)
 
-        # Calculate days needed for weekly WMA
-        # 30 weeks × 7 days/week = 210 days, but accounting for weekends/holidays
-        # We need ~30 weeks of actual trading days, so fetch more calendar days
-        weeks_buffer = weekly_wma_period + 10  # Extra buffer for holidays
-        weekly_days = weeks_buffer * 7  # Convert weeks to calendar days
-
-        # Total days = max of (display + volume MA) or (weekly WMA requirement)
-        total_days = max(lookback_days + volume_ma_period + 30, weekly_days)
+        total_days = max(history_calendar_days, lookback_days + volume_ma_period + 30)
 
         from_date = to_date - timedelta(days=total_days)
 
@@ -168,7 +162,6 @@ class StockScreener:
                 ticker,
                 from_date=from_date,
                 to_date=to_date,
-                series='EQ'
             )
 
             if new_df.empty:
@@ -179,12 +172,11 @@ class StockScreener:
                     return (ticker, processed_df, True, "Using cached data")
                 return (ticker, pd.DataFrame(), False, "No data available")
 
-            # Merge with cached data if in incremental mode
-            if is_incremental:
-                combined_df = self.cache.merge_new_data(ticker, new_df)
-            else:
-                combined_df = new_df
-                self.cache.save_ticker_data(ticker, combined_df)
+            # Always merge through the cache rather than overwriting it outright —
+            # an "initial" fetch can still run against a ticker that already has a
+            # longer cached history (e.g. re-running --mode initial), and a raw
+            # overwrite would silently discard everything outside the new window.
+            combined_df = self.cache.merge_new_data(ticker, new_df)
 
             # Process calculations
             processed_df = self.calculator.process_ticker_data(combined_df, nse_52w_data=nse_52w_data, nifty_df=nifty_df, promoter_data=promoter_data, financial_data=financial_data)
@@ -225,7 +217,6 @@ class StockScreener:
             tickers,
             from_date=from_date,
             to_date=to_date,
-            series='EQ'
         )
 
         nse_52w_data = nse_52w_data or {}
@@ -240,11 +231,13 @@ class StockScreener:
                 ticker_promoter = promoter_data.get(ticker)
                 ticker_financials = financial_data.get(ticker)
                 if not df.empty:
-                    # Save to cache
-                    self.cache.save_ticker_data(ticker, df)
+                    # Merge with existing cache rather than overwriting —
+                    # a fresh "initial" fetch window may be shorter than the
+                    # history already on disk
+                    combined_df = self.cache.merge_new_data(ticker, df)
                     # Process calculations
                     processed_df = self.calculator.process_ticker_data(
-                        df, nse_52w_data=ticker_52w, nifty_df=nifty_df,
+                        combined_df, nse_52w_data=ticker_52w, nifty_df=nifty_df,
                         promoter_data=ticker_promoter, financial_data=ticker_financials)
                     processed_data[ticker] = processed_df
                 else:
@@ -304,17 +297,23 @@ class StockScreener:
             promoter_data = promoter_future.result()
             financial_data = financial_future.result()
 
-        # Determine processing strategy
-        from_date, to_date, is_incremental = self._calculate_fetch_window()
+        # Determine the full-history window (used for any ticker with no cache yet,
+        # regardless of mode). NOTE: is_incremental from this call is NOT a global
+        # decision — with ticker=None it always reflects the "no cache to check"
+        # case. Per-ticker incremental vs. initial handling happens in the batch
+        # loop below via DataCache.has_cache().
+        from_date, to_date, _ = self._calculate_fetch_window()
 
         # Fetch NIFTY 50 index data for relative strength calculation
         logger.info("Fetching NIFTY 50 data for relative strength...")
         nifty_df = self.nse_fetcher.fetch_nifty_data(from_date=from_date, to_date=to_date)
         if nifty_df.empty:
             # Try fetching from cache
-            nifty_df = self.cache.load_ticker_data('NIFTY_50')
+            nifty_df = self.cache.load_ticker_data('NIFTY_50', required_columns=['date', 'close'])
             if nifty_df.empty:
-                logger.warning("Could not fetch NIFTY 50 data - RS calculations will be N/A")
+                logger.error("NIFTY 50 fetch failed AND no cache available - RS vs NIFTY "
+                             "will be N/A for the entire universe this run (visible as a "
+                             "warning banner on the Shortlist sheet)")
                 nifty_df = None
             else:
                 logger.info(f"Loaded NIFTY 50 from cache: {len(nifty_df)} days")
@@ -338,35 +337,41 @@ class StockScreener:
             logger.info(f"Tickers: {', '.join(batch_tickers[:5])}{'...' if len(batch_tickers) > 5 else ''}")
             logger.info(f"{'=' * 80}")
 
-            # Use batch optimized processing for initial loads
-            if not is_incremental:
+            # Decide per-ticker whether this is an incremental update or needs a
+            # full historical fetch. In 'auto' mode this is based on whether the
+            # ticker actually has cached data -- NOT a single decision for the
+            # whole run, so routine runs after the first one take the fast,
+            # incremental path instead of re-fetching full history every time.
+            if self.mode == 'initial':
+                batch_full = batch_tickers
+                batch_incremental = []
+            elif self.mode == 'incremental':
+                batch_full = []
+                batch_incremental = batch_tickers
+            else:  # auto
+                batch_full = [t for t in batch_tickers if not self.cache.has_cache(t)]
+                batch_incremental = [t for t in batch_tickers if self.cache.has_cache(t)]
+
+            batch_results = {}
+
+            # Tickers with no cache yet: fetch full history via the optimized batch path
+            if batch_full:
                 try:
-                    batch_results = self._process_batch_optimized(
-                        batch_tickers, from_date, to_date,
+                    full_results = self._process_batch_optimized(
+                        batch_full, from_date, to_date,
                         nse_52w_data=nse_52w_data, nifty_df=nifty_df,
                         promoter_data=promoter_data, financial_data=financial_data)
-                    ticker_data.update(batch_results)
-
-                    success_count = len(batch_results)
-                    fail_count = len(batch_tickers) - success_count
-                    logger.info(f"Batch {batch_num + 1} complete: ✓ {success_count} succeeded, ✗ {fail_count} failed")
-
-                    # Add failed tickers
-                    for ticker in batch_tickers:
-                        if ticker not in batch_results:
-                            failed_tickers.append(ticker)
-
+                    batch_results.update(full_results)
                 except Exception as e:
-                    logger.error(f"Batch {batch_num + 1} failed: {str(e)}")
-                    failed_tickers.extend(batch_tickers)
+                    logger.error(f"Batch {batch_num + 1} full-fetch group failed: {str(e)}")
+                    failed_tickers.extend(batch_full)
 
-            else:
-                # For incremental updates, use concurrent processing per ticker
-                # (since each ticker may have different date ranges)
+            # Tickers with existing cache: fetch only new data since last cached date
+            if batch_incremental:
                 with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
                     futures = {}
 
-                    for ticker in batch_tickers:
+                    for ticker in batch_incremental:
                         ticker_from_date, ticker_to_date, ticker_is_incr = self._calculate_fetch_window(ticker)
                         ticker_52w = nse_52w_data.get(ticker)
                         ticker_promoter = promoter_data.get(ticker)
@@ -379,14 +384,13 @@ class StockScreener:
                         )
                         futures[future] = ticker
 
-                    # Collect results as they complete
                     for future in as_completed(futures):
                         ticker = futures[future]
                         try:
                             ticker_symbol, processed_df, success, msg = future.result()
 
                             if success and not processed_df.empty:
-                                ticker_data[ticker_symbol] = processed_df
+                                batch_results[ticker_symbol] = processed_df
                                 logger.info(f"✓ {ticker_symbol}: {msg}")
                             else:
                                 failed_tickers.append(ticker_symbol)
@@ -396,7 +400,14 @@ class StockScreener:
                             logger.error(f"✗ {ticker}: {str(e)}")
                             failed_tickers.append(ticker)
 
-                logger.info(f"Batch {batch_num + 1} complete")
+            ticker_data.update(batch_results)
+            success_count = len(batch_results)
+            fail_count = len(batch_tickers) - success_count
+            logger.info(f"Batch {batch_num + 1} complete: ✓ {success_count} succeeded, ✗ {fail_count} failed")
+
+            for ticker in batch_tickers:
+                if ticker not in batch_results and ticker not in failed_tickers:
+                    failed_tickers.append(ticker)
 
         # Generate Excel report
         if ticker_data:

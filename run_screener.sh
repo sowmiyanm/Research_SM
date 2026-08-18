@@ -30,7 +30,7 @@ echo "Starting stock screener..."
 echo ""
 
 # Run the main script
-python3 main.py
+.venv/bin/python3 main.py
 
 echo ""
 echo "=================================================="

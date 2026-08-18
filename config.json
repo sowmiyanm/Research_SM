@@ -1,18 +1,39 @@
 {
-  "exchange": "NSE",
   "lookback_days_display": 60,
   "evaluation_days": 45,
   "volume_ma_period": 36,
+  "volume_ma_multiplier": 1.0,
+  "breakout_volume_multiplier": 2.0,
   "weekly_wma_period": 30,
-  "weekstart_day": "Monday",
+  "wma_slope_threshold_pct": 2.0,
+  "corp_action_gap_threshold_pct": 30.0,
+  "base_levels": {
+    "pivot_lookback_weeks": 52,
+    "pivot_skip_weeks": 4,
+    "base_min_weeks": 5,
+    "base_max_depth_pct": 25.0,
+    "stop_buffer_pct": 2.0,
+    "fallback_stop_pct": 10.0
+  },
   "date_format": "DD-MM-YYYY",
   "display_order": "descending",
   "delivery_bins": {
-    "purple": {"min": 80, "max": 100, "color": "D8BFD8"},
-    "dark_green": {"min": 60, "max": 80, "color": "006400"},
-    "light_green": {"min": 50, "max": 60, "color": "90EE90"},
-    "blue": {"min": 40, "max": 50, "color": "ADD8E6"},
-    "white": {"min": 0, "max": 40, "color": "FFFFFF"}
+    "purple": {"min": 80, "color": "D8BFD8"},
+    "dark_green": {"min": 60, "color": "006400"},
+    "light_green": {"min": 50, "color": "90EE90"},
+    "blue": {"min": 40, "color": "ADD8E6"},
+    "cream": {"min": 0, "color": "FFFACD"},
+    "white": {"min": 0, "color": "FFFFFF"}
   },
-  "fno_grey_color": "D3D3D3"
+  "fno_grey_color": "D3D3D3",
+  "stale_days_threshold": 4,
+  "shortlist": {
+    "min_adv_crore": 5,
+    "stages": ["Stage 2", "Stage 2 (Pullback)"],
+    "min_rs": 0,
+    "max_exit_score": 2,
+    "min_deliv_30d": 45,
+    "exclude_corp_action": true,
+    "top_n": 50
+  }
 }

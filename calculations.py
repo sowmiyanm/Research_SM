@@ -17,8 +17,22 @@ class StockCalculator:
     def __init__(self, config):
         self.config = config
         self.volume_ma_period = config.get('volume_ma_period', 36)
+        self.volume_ma_multiplier = config.get('volume_ma_multiplier', 1.0)
+        self.breakout_volume_multiplier = config.get('breakout_volume_multiplier', 2.0)
         self.weekly_wma_period = config.get('weekly_wma_period', 30)
-        self.weekstart_day = config.get('weekstart_day', 'Monday')
+        self.wma_slope_threshold = config.get('wma_slope_threshold_pct', 2.0)
+        # Single-day % move above which a price gap is treated as a suspected
+        # corporate action. Must stay above NSE's 20% circuit band -- see
+        # detect_corporate_actions() for the measured justification.
+        self.corp_action_gap_threshold = config.get('corp_action_gap_threshold_pct', 30.0)
+        # Base / pivot / stop parameters (see calculate_base_levels)
+        base_cfg = config.get('base_levels', {})
+        self.pivot_lookback_weeks = base_cfg.get('pivot_lookback_weeks', 52)
+        self.pivot_skip_weeks = base_cfg.get('pivot_skip_weeks', 4)
+        self.base_min_weeks = base_cfg.get('base_min_weeks', 5)
+        self.base_max_depth_pct = base_cfg.get('base_max_depth_pct', 25.0)
+        self.stop_buffer_pct = base_cfg.get('stop_buffer_pct', 2.0)
+        self.fallback_stop_pct = base_cfg.get('fallback_stop_pct', 10.0)
 
     def calculate_delivery_percentage(self, df):
         """
@@ -58,9 +72,10 @@ class StockCalculator:
             np.nan
         )
 
-        # Check if current volume > MA
+        # Check if current volume > MA × multiplier (Weinstein: 2× volume spike)
+        multiplier = self.volume_ma_multiplier
         df['is_high_vol'] = df.apply(
-            lambda row: 'Yes' if pd.notna(row['vol_ma36']) and row['traded_quantity'] > row['vol_ma36']
+            lambda row: 'Yes' if pd.notna(row['vol_ma36']) and row['traded_quantity'] > row['vol_ma36'] * multiplier
             else ('No' if pd.notna(row['vol_ma36']) else 'N/A'),
             axis=1
         )
@@ -74,20 +89,15 @@ class StockCalculator:
             df: DataFrame with date and close columns
 
         Returns:
-            DataFrame with weekly_wma30 and weekstart_cross columns
+            DataFrame with weekly_wma30, cross_above, cross_below, weeks_above_wma,
+            weeks_below_wma, wma_slope columns
         """
         df = df.copy()
         df['date'] = pd.to_datetime(df['date'])
 
-        # Determine week ending date (last trading day of each week)
-        # Week starts on Monday (or configured day)
-        weekday_map = {
-            'Monday': 0, 'Tuesday': 1, 'Wednesday': 2,
-            'Thursday': 3, 'Friday': 4, 'Saturday': 5, 'Sunday': 6
-        }
-        weekstart = weekday_map.get(self.weekstart_day, 0)
-
-        # Create week identifier
+        # NSE trading weeks always run Mon-Fri, so grouping by "week ending Friday"
+        # already gives the correct weekly close regardless of any configured
+        # week-start day - there's no other trading day a week could start on.
         df['week'] = df['date'].dt.to_period('W-FRI')  # Week ending Friday
 
         # Get weekly close (last close of each week)
@@ -119,7 +129,36 @@ class StockCalculator:
                 elif prev_close >= prev_wma and curr_close < curr_wma:
                     weekly_data.loc[i, 'cross_below'] = True
 
+        # Calculate WMA slope at the WEEKLY level (compare current week vs 4
+        # weeks ago). Previously this was done on daily rows with i-20, which is
+        # unreliable: a holiday-shortened week has fewer than 5 trading days, so
+        # 20 daily rows back can land in a different week than intended, and the
+        # same week's WMA value repeats across all 5 days, making the daily loop
+        # compare identical values 5 times per week without adding new information.
+        #
+        # Threshold of ±2% over 4 weeks — meaningful trend change, not noise.
+        weekly_data['wma_slope'] = 'N/A'
+        for i in range(4, len(weekly_data)):  # Need 4 prior weekly WMA readings
+            current_wma = weekly_data.iloc[i]['weekly_wma30']
+            past_wma = weekly_data.iloc[i - 4]['weekly_wma30']
+
+            if pd.notna(current_wma) and pd.notna(past_wma) and past_wma > 0:
+                slope_pct = ((current_wma - past_wma) / past_wma) * 100
+
+                if slope_pct > self.wma_slope_threshold:
+                    weekly_data.loc[i, 'wma_slope'] = 'Rising'
+                elif slope_pct < -self.wma_slope_threshold:
+                    weekly_data.loc[i, 'wma_slope'] = 'Falling'
+                else:
+                    weekly_data.loc[i, 'wma_slope'] = 'Flat'
+
         # Calculate weeks above/below 30WMA (consecutive count)
+        # NOTE: A single week crossing below WMA resets the counter to zero.
+        # This is intentional — "weeks above" measures the UNINTERRUPTED
+        # streak. A stock that was above for 25 weeks and dipped below for
+        # one week genuinely broke its streak. The Excel report shows both
+        # counts side by side so an analyst can see: 25 weeks above before
+        # the break, and now 3 weeks below.
         weekly_data['weeks_above_wma'] = 0
         weekly_data['weeks_below_wma'] = 0
         above_count = 0
@@ -137,13 +176,27 @@ class StockCalculator:
             weekly_data.loc[weekly_data.index[i], 'weeks_above_wma'] = above_count
             weekly_data.loc[weekly_data.index[i], 'weeks_below_wma'] = below_count
 
-        # Merge back to daily data
+        # Merge back to daily data. Cross flags are computed at the WEEKLY
+        # level — they should only be TRUE on the week-end row (Friday or
+        # last trading day of the week), not broadcast to every daily row.
+        daily_metrics = ['week', 'weekly_wma30', 'weeks_above_wma',
+                         'weeks_below_wma', 'wma_slope']
         df = df.merge(
-            weekly_data[['week', 'weekly_wma30', 'cross_above', 'cross_below',
-                         'weeks_above_wma', 'weeks_below_wma']],
+            weekly_data[daily_metrics],
             on='week',
             how='left'
         )
+        # Merge cross flags separately, keyed by date (week_end_date)
+        df = df.merge(
+            weekly_data[['week_end_date', 'cross_above', 'cross_below']],
+            left_on='date',
+            right_on='week_end_date',
+            how='left'
+        )
+        df['cross_above'] = df['cross_above'].fillna(False)
+        df['cross_below'] = df['cross_below'].fillna(False)
+        if 'week_end_date' in df.columns:
+            df.drop(columns=['week_end_date'], inplace=True)
 
         # Calculate weekly average volume ratio for volume-confirmed cross detection
         # Group daily vol_ratio by week and compute mean
@@ -152,23 +205,14 @@ class StockCalculator:
             weekly_vol.columns = ['week', 'week_avg_vol_ratio']
             df = df.merge(weekly_vol, on='week', how='left')
 
-            # Volume-confirmed cross: cross occurred AND week's avg volume > 1.0x MA
-            df['cross_above_confirmed'] = df['cross_above'] & (df['week_avg_vol_ratio'] > 1.0)
-            df['cross_below_confirmed'] = df['cross_below'] & (df['week_avg_vol_ratio'] > 1.0)
+            # Volume-confirmed cross: cross occurred AND week's avg volume > N× MA
+            # (Weinstein standard: 2×, configurable via breakout_volume_multiplier)
+            df['cross_above_confirmed'] = df['cross_above'] & (df['week_avg_vol_ratio'] > self.breakout_volume_multiplier)
+            df['cross_below_confirmed'] = df['cross_below'] & (df['week_avg_vol_ratio'] > self.breakout_volume_multiplier)
         else:
             df['week_avg_vol_ratio'] = np.nan
             df['cross_above_confirmed'] = df['cross_above']
             df['cross_below_confirmed'] = df['cross_below']
-
-        # Mark first trading day of each week (handles Monday holidays correctly)
-        df['is_weekstart'] = False
-        for week_val in df['week'].unique():
-            week_mask = df['week'] == week_val
-            first_idx = df[week_mask].index[0]
-            df.loc[first_idx, 'is_weekstart'] = True
-
-        # Weekstart cross signal (show on first trading day of week when cross occurred)
-        df['weekstart_cross'] = df['is_weekstart'] & df['cross_above']
 
         return df
 
@@ -229,48 +273,63 @@ class StockCalculator:
         Returns:
             Dictionary with count statistics
         """
+        # High delivery only signals accumulation if price wasn't falling that
+        # day - a block-deal exit or pledge unwind can print identical high
+        # delivery + high volume on a down day, which is distribution, not
+        # buying. Days where price fell are excluded from every "accumulation"
+        # count below (mirrors the direction check already used in
+        # calculate_price_delivery_divergence).
+        price_up_or_flat = df['close'].diff().fillna(0) >= 0
+
         # Get last N days
         recent_data = df.tail(evaluation_days)
+        recent_up = price_up_or_flat.tail(evaluation_days)
 
-        # Count excluding blue and white (delivery >= 50%)
-        count_excl_blue = recent_data['delivery_pct'].apply(
-            lambda x: 1 if pd.notna(x) and x >= 50 else 0
+        # Count excluding blue and white (delivery >= 50%), price not down
+        count_excl_blue = (
+            (recent_data['delivery_pct'] >= 50) & recent_data['delivery_pct'].notna() & recent_up
         ).sum()
 
-        # Count including blue, excluding white (delivery >= 40%)
-        count_incl_blue = recent_data['delivery_pct'].apply(
-            lambda x: 1 if pd.notna(x) and x >= 40 else 0
+        # Count including blue, excluding white (delivery >= 40%), price not down
+        count_incl_blue = (
+            (recent_data['delivery_pct'] >= 40) & recent_data['delivery_pct'].notna() & recent_up
         ).sum()
 
-        # Count with high volume (delivery >= 50% AND volume > MA) - 45 days
+        # Count with high volume (delivery >= 50% AND volume > MA), price not down - 45 days
         count_excl_blue_highvol = recent_data.apply(
             lambda row: 1 if (pd.notna(row['delivery_pct']) and row['delivery_pct'] >= 50
                              and row.get('is_high_vol') == 'Yes') else 0,
             axis=1
-        ).sum()
+        )
+        count_excl_blue_highvol = (count_excl_blue_highvol.values & recent_up.values).sum()
 
-        # Count with high volume (delivery >= 40% AND volume > MA) - 45 days
+        # Count with high volume (delivery >= 40% AND volume > MA), price not down - 45 days
         count_incl_blue_highvol = recent_data.apply(
             lambda row: 1 if (pd.notna(row['delivery_pct']) and row['delivery_pct'] >= 40
                              and row.get('is_high_vol') == 'Yes') else 0,
             axis=1
-        ).sum()
+        )
+        count_incl_blue_highvol = (count_incl_blue_highvol.values & recent_up.values).sum()
 
-        # NEW: Recent 15-day count (delivery >= 50% AND volume > MA)
+        # NEW: Recent 15-day count (delivery >= 50% AND volume > MA), price not down
         recent_15 = df.tail(15)
+        recent_up_15 = price_up_or_flat.tail(15)
         count_excl_blue_highvol_15d = recent_15.apply(
             lambda row: 1 if (pd.notna(row['delivery_pct']) and row['delivery_pct'] >= 50
                              and row.get('is_high_vol') == 'Yes') else 0,
             axis=1
-        ).sum()
+        )
+        count_excl_blue_highvol_15d = (count_excl_blue_highvol_15d.values & recent_up_15.values).sum()
 
-        # NEW: Recent 20-day count (delivery >= 50% AND volume > MA)
+        # NEW: Recent 20-day count (delivery >= 50% AND volume > MA), price not down
         recent_20 = df.tail(20)
+        recent_up_20 = price_up_or_flat.tail(20)
         count_excl_blue_highvol_20d = recent_20.apply(
             lambda row: 1 if (pd.notna(row['delivery_pct']) and row['delivery_pct'] >= 50
                              and row.get('is_high_vol') == 'Yes') else 0,
             axis=1
-        ).sum()
+        )
+        count_excl_blue_highvol_20d = (count_excl_blue_highvol_20d.values & recent_up_20.values).sum()
 
         return {
             'count_purple_darkgreen_lightgreen': int(count_excl_blue),
@@ -306,22 +365,6 @@ class StockCalculator:
             else (f"Below {x:+.1f}%" if pd.notna(x) else "N/A")
         )
 
-        # Calculate 30WMA slope (compare current vs 4 weeks ago)
-        df['wma_slope'] = 'N/A'
-        for i in range(20, len(df)):  # Need at least ~20 trading days (4 weeks)
-            current_wma = df.iloc[i]['weekly_wma30']
-            past_wma = df.iloc[i-20]['weekly_wma30']
-
-            if pd.notna(current_wma) and pd.notna(past_wma):
-                slope_pct = ((current_wma - past_wma) / past_wma) * 100
-
-                if slope_pct > 2:
-                    df.loc[i, 'wma_slope'] = 'Rising'
-                elif slope_pct < -2:
-                    df.loc[i, 'wma_slope'] = 'Falling'
-                else:
-                    df.loc[i, 'wma_slope'] = 'Flat'
-
         # Calculate Weinstein Stage
         df['stage'] = 'N/A'
         for i in range(len(df)):
@@ -335,11 +378,41 @@ class StockCalculator:
                     df.loc[i, 'stage'] = 'Stage 1'  # Accumulation/Basing
                 elif price_vs >= 0 and slope == 'Rising':
                     df.loc[i, 'stage'] = 'Stage 2'  # Markup/Uptrend
+                elif price_vs < 0 and slope == 'Rising':
+                    # Pullback within an established uptrend — WMA still
+                    # rising but price dipped below it. This is a normal
+                    # Stage 2 pullback, distinct from clean Stage 2 (price
+                    # above rising WMA). The sub-label helps analysts
+                    # distinguish a buying opportunity (pullback) from a
+                    # stock that's already extended above the WMA.
+                    df.loc[i, 'stage'] = 'Stage 2 (Pullback)'
                 elif price_vs >= 0 and slope in ['Flat', 'Falling']:
                     df.loc[i, 'stage'] = 'Stage 3'  # Distribution/Topping
-                else:
-                    df.loc[i, 'stage'] = 'Stage 1'  # Default to accumulation
 
+        return df
+
+    def calculate_triple_confirm(self, df):
+        """
+        Triple Confirm: price above the 30WMA, volume above its 36-day
+        average, and delivery elevated (>=50%), all on the same day.
+
+        This is a stricter, price-direction-aware signal than the existing
+        delivery/volume color-band grid (which flags volume+delivery quality
+        with no check on which way price is trending).
+
+        Args:
+            df: DataFrame with price_vs_wma_pct, is_high_vol, delivery_pct
+
+        Returns:
+            DataFrame with triple_confirm ('Yes'/'No') column added
+        """
+        df = df.copy()
+        df['triple_confirm'] = np.where(
+            (df['price_vs_wma_pct'] >= 0) &
+            (df['is_high_vol'] == 'Yes') &
+            pd.notna(df['delivery_pct']) & (df['delivery_pct'] >= 50),
+            'Yes', 'No'
+        )
         return df
 
     def calculate_delivery_trends(self, df):
@@ -405,12 +478,85 @@ class StockCalculator:
         rs = avg_gain / avg_loss
         df['rsi'] = 100 - (100 / (1 + rs))
 
+        # avg_gain == avg_loss == 0 means price was completely flat over the
+        # whole window (not missing data) - 0/0 produces NaN here, which
+        # would otherwise fall through to the 'N/A' label below and get
+        # treated the same as "not enough history yet". A flat price has
+        # genuinely neutral momentum, so it should read as RSI 50/Neutral.
+        flat_price = (avg_gain == 0) & (avg_loss == 0)
+        df.loc[flat_price, 'rsi'] = 50.0
+
         # Add RSI signal classification
         df['rsi_signal'] = df['rsi'].apply(
             lambda x: 'Overbought' if pd.notna(x) and x > 70
             else ('Oversold' if pd.notna(x) and x < 30
                   else ('Neutral' if pd.notna(x) else 'N/A'))
         )
+
+        return df
+
+    def detect_corporate_actions(self, df):
+        """
+        Flag stocks with suspected corporate actions (splits, bonuses) that
+        create artificial price gaps in historical data.
+
+        Detection: look for single-day close-price changes beyond
+        corp_action_gap_threshold_pct (default 30%).
+
+        Why 30% and not 15%: NSE applies 20% price bands to most non-F&O
+        stocks, so a small/mid cap hitting the upper or lower circuit prints
+        a clean ±20.0% move that is NOT a corporate action. Measured over a
+        296-ticker sample, a 15% threshold flagged 83 stocks of which only 8
+        were genuine splits/bonuses — 74 of the 83 were 15-25% moves, mostly
+        exactly ±20.0% circuit hits. Because the shortlist excludes any stock
+        with a flag anywhere in its history, that quarantined ~25% of the
+        universe to catch 8 real events. At 30% the same sample yields 8 of 8
+        genuine actions and zero false positives (real splits/bonuses show up
+        at -45% to -90%: a 1:2 bonus is -50%, 1:5 is -80%).
+
+        Adds columns:
+          corp_action_suspected   — 'Yes' if any gap day found
+          corp_action_gap_dates   — semicolon-separated list of gap dates
+
+        The Excel report should grey-out or warn on these rows because
+        historical price levels before the gap are not comparable to
+        current levels without adjustment.
+        """
+        df = df.copy()
+        df['corp_action_suspected'] = 'No'
+        df['corp_action_gap_dates'] = ''
+        df['corp_action_gap_info'] = ''  # always present (see REQUIRED_COLUMNS note)
+
+        if len(df) < 2:
+            return df
+
+        # Compute day-over-day close change
+        close_prev = df['close'].shift(1)
+        close_curr = df['close']
+
+        # pct_change: avoid inf when prev close is 0
+        with np.errstate(divide='ignore', invalid='ignore'):
+            pct_change = np.abs((close_curr - close_prev) / close_prev.replace(0, np.nan)) * 100
+
+        gap_threshold = self.corp_action_gap_threshold
+
+        gap_mask = pd.notna(pct_change) & (pct_change > gap_threshold)
+
+        # Exclude first data row (no prior close to compare)
+        if len(df) > 0:
+            gap_mask.iloc[0] = False
+
+        if gap_mask.any():
+            gap_dates = df.loc[gap_mask, 'date'].dt.strftime('%Y-%m-%d').tolist()
+            df.loc[gap_mask, 'corp_action_suspected'] = 'Yes'
+            for idx in gap_mask[gap_mask].index:
+                df.loc[idx, 'corp_action_gap_dates'] = df.loc[idx, 'date'].strftime('%Y-%m-%d')
+            df['corp_action_gap_info'] = '; '.join(gap_dates) if gap_dates else ''
+
+            # Also flag all rows BEFORE the earliest gap as suspect
+            # (historical prices are pre-adjustment)
+            earliest_gap_idx = gap_mask[gap_mask].index[0]
+            df.loc[:earliest_gap_idx, 'corp_action_suspected'] = 'Yes'
 
         return df
 
@@ -428,18 +574,32 @@ class StockCalculator:
         """
         df = df.copy()
 
-        if nse_52w_data is not None:
-            # Use authoritative NSE 52W data
-            df['52w_high'] = nse_52w_data['52w_high']
-            df['52w_low'] = nse_52w_data['52w_low']
-            df['52w_high_date'] = nse_52w_data.get('52w_high_date', '')
-            df['52w_low_date'] = nse_52w_data.get('52w_low_date', '')
+        # Compute a genuine trailing 252-trading-day high/low per row using
+        # intraday high/low columns when available (from bhav copy); fall
+        # back to close-based extremes for older cached data. The NSE
+        # snapshot (52W_HIGH/52W_LOW from quote API) is only authoritative
+        # for the current calendar 52-week window and is applied via
+        # nse_52w_data below.
+        if 'high' in df.columns and 'low' in df.columns:
+            df['52w_high'] = df['high'].rolling(window=252, min_periods=126).max()
+            df['52w_low'] = df['low'].rolling(window=252, min_periods=126).min()
         else:
-            # Fallback: rolling 252-day calculation
             df['52w_high'] = df['close'].rolling(window=252, min_periods=126).max()
             df['52w_low'] = df['close'].rolling(window=252, min_periods=126).min()
-            df['52w_high_date'] = ''
-            df['52w_low_date'] = ''
+        df['52w_high_date'] = ''
+        df['52w_low_date'] = ''
+
+        if nse_52w_data is not None and len(df) > 0:
+            # The NSE snapshot is authoritative only for TODAY - it reflects the
+            # current 52-week window, not the window that existed on any past
+            # date. Broadcasting it across the whole column would be look-ahead
+            # bias (every historical row would "know" future price extremes), so
+            # it's applied only to the most recent row.
+            last_idx = df.index[-1]
+            df.loc[last_idx, '52w_high'] = nse_52w_data['52w_high']
+            df.loc[last_idx, '52w_low'] = nse_52w_data['52w_low']
+            df.loc[last_idx, '52w_high_date'] = nse_52w_data.get('52w_high_date', '')
+            df.loc[last_idx, '52w_low_date'] = nse_52w_data.get('52w_low_date', '')
 
         # Calculate distance from 52W high (negative = below, positive = above/at)
         df['52w_high_pct'] = np.where(
@@ -460,15 +620,17 @@ class StockCalculator:
             lambda x: 'Yes' if pd.notna(x) and x > -5 else ('No' if pd.notna(x) else 'N/A')
         )
 
-        # Extract PE ratio and related fundamentals (from NSE quote API)
-        if nse_52w_data is not None:
-            df['pe_ratio'] = nse_52w_data.get('pe_ratio', np.nan)
-            df['sector_pe'] = nse_52w_data.get('sector_pe', np.nan)
-            df['face_value'] = nse_52w_data.get('face_value', np.nan)
-        else:
-            df['pe_ratio'] = np.nan
-            df['sector_pe'] = np.nan
-            df['face_value'] = np.nan
+        # Extract PE ratio, sector PE, and face value from NSE quote API.
+        # These are point-in-time values only valid TODAY — broadcasting them
+        # to every historical row would contaminate any backtest over cached
+        # data (a stock trading at PE=8 in 2024 but PE=35 today would show
+        # PE=35 on its 2024 rows).
+        df['pe_ratio'] = np.nan
+        df['sector_pe'] = np.nan
+        if nse_52w_data is not None and len(df) > 0:
+            last_idx = df.index[-1]
+            df.loc[last_idx, 'pe_ratio'] = nse_52w_data.get('pe_ratio', np.nan)
+            df.loc[last_idx, 'sector_pe'] = nse_52w_data.get('sector_pe', np.nan)
 
         return df
 
@@ -579,8 +741,10 @@ class StockCalculator:
 
             deliv_change = recent_deliv - earlier_deliv
 
-            # Bullish divergence: price down/flat (<2%) but delivery rising (>3%)
-            if price_roc < 2 and deliv_change > 3:
+            # Bullish divergence: price down/flat (between -10% and +2%)
+            # but delivery rising (>3%). A crash beyond -10% in 20 days is
+            # genuine selling, not accumulation — no divergence story.
+            if -10 <= price_roc < 2 and deliv_change > 3:
                 df.loc[i, 'divergence'] = 'Bullish'
             # Bearish divergence: price up (>2%) but delivery falling (<-3%)
             elif price_roc > 2 and deliv_change < -3:
@@ -604,8 +768,19 @@ class StockCalculator:
         """
         df = df.copy()
 
-        # Calculate True Range (using close-to-close for simplicity since we don't have high/low)
-        df['tr'] = df['close'].diff().abs()
+        # Calculate True Range using HIGH/LOW/prev-close when available,
+        # falling back to close-to-close for older cached data without
+        # high/low columns. This gives a proper Wilder-style TR that
+        # captures intraday volatility rather than just close-to-close gaps.
+        if 'high' in df.columns and 'low' in df.columns:
+            prev_close = df['close'].shift(1)
+            tr1 = df['high'] - df['low']
+            tr2 = (df['high'] - prev_close).abs()
+            tr3 = (df['low'] - prev_close).abs()
+            # max across the three components, row-wise
+            df['tr'] = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+        else:
+            df['tr'] = df['close'].diff().abs()
 
         # ATR 10 and ATR 50
         df['atr_10'] = df['tr'].rolling(window=10, min_periods=10).mean()
@@ -724,18 +899,45 @@ class StockCalculator:
                 else:
                     df.loc[i, 'deliv_momentum'] = 'Stable'
 
-        # 3. Distribution Alert (High price + Falling delivery)
+        # 3. Volume Spike on Down Days (Distribution pattern)
+        # Only flag meaningful drops (>1%) to avoid noise from trivial declines
+        # MUST run before Distribution Alert (step 4), which reads vol_spike_down.
+        df['vol_spike_down'] = 'No'
+        for i in range(1, len(df)):
+            prev_close = df.iloc[i-1]['close']
+            curr_close = df.iloc[i]['close']
+            is_high_vol = df.iloc[i].get('is_high_vol', 'No')
+
+            if pd.notna(prev_close) and prev_close > 0:
+                price_change_pct = ((curr_close - prev_close) / prev_close) * 100
+                # High volume on significant down day (>1% drop) = potential distribution
+                if price_change_pct < -1 and is_high_vol == 'Yes':
+                    df.loc[i, 'vol_spike_down'] = 'Yes'
+
+        # 4. Distribution Alert (detects institutions selling into strength OR
+        # continuing to distribute after the breakdown)
         df['distribution_alert'] = 'No'
         for i in range(50, len(df)):  # Need sufficient history
-            # Check if price is near 52W high
             near_high = df.iloc[i].get('near_52w_high', 'N/A')
             deliv_momentum = df.iloc[i]['deliv_momentum']
+            stage = df.iloc[i].get('stage', 'N/A')
+            vol_spike = df.iloc[i].get('vol_spike_down', 'No')
 
-            # Distribution = Near high + Declining delivery
+            # Pattern A: Classic distribution — near highs with declining
+            # delivery (institutions selling into retail buying).
             if near_high == 'Yes' and deliv_momentum == 'Declining':
                 df.loc[i, 'distribution_alert'] = 'Yes'
 
-        # 4. Trend Break Detection (Lower Highs)
+            # Pattern B: Post-breakdown distribution — stock already in Stage
+            # 3/4 with delivery momentum still declining AND volume spikes on
+            # down days. This catches distribution that started below 52W highs
+            # (e.g. after a failed rally) and would have been invisible before.
+            elif (stage in ['Stage 3', 'Stage 4']
+                  and deliv_momentum == 'Declining'
+                  and vol_spike == 'Yes'):
+                df.loc[i, 'distribution_alert'] = 'Yes'
+
+        # 5. Trend Break Detection (Lower Highs)
         df['trend_break'] = 'Neutral'
         for i in range(20, len(df)):
             # Get recent highs (last 20 days)
@@ -753,31 +955,33 @@ class StockCalculator:
                     elif current_high < previous_high * 0.98:
                         df.loc[i, 'trend_break'] = 'Lower High'
 
-        # 5. Stage 3 Alert (Entered distribution phase)
+        # 6. Stage 3 Alert (Entered distribution phase)
+        # "Exit Signal" persists for a window of days after the transition,
+        # not just the single transition day where stage flips to Stage 3.
+        STAGE3_ALERT_WINDOW = 10  # trading days
         df['stage_3_alert'] = '-'
+        days_since_transition = 0
+        observed_transition = False  # only fire after an actual Stage 2→3 transition
         for i in range(1, len(df)):
             current_stage = df.iloc[i].get('stage', 'N/A')
             previous_stage = df.iloc[i-1].get('stage', 'N/A')
 
-            # Alert if moving from Stage 2 to Stage 3
-            if current_stage == 'Stage 3' and previous_stage == 'Stage 2':
+            if current_stage == 'Stage 3' and previous_stage in ['Stage 2', 'Stage 2 (Pullback)']:
+                # Fresh transition into Stage 3 — start the alert window
+                days_since_transition = 0
+                observed_transition = True
+                df.loc[i, 'stage_3_alert'] = 'Exit Signal'
+            elif (current_stage == 'Stage 3' and observed_transition
+                  and days_since_transition < STAGE3_ALERT_WINDOW):
+                days_since_transition += 1
                 df.loc[i, 'stage_3_alert'] = 'Exit Signal'
             elif current_stage == 'Stage 3':
+                days_since_transition += 1
                 df.loc[i, 'stage_3_alert'] = 'Stage 3'
-
-        # 6. Volume Spike on Down Days (Distribution pattern)
-        # Only flag meaningful drops (>1%) to avoid noise from trivial declines
-        df['vol_spike_down'] = 'No'
-        for i in range(1, len(df)):
-            prev_close = df.iloc[i-1]['close']
-            curr_close = df.iloc[i]['close']
-            is_high_vol = df.iloc[i].get('is_high_vol', 'No')
-
-            if pd.notna(prev_close) and prev_close > 0:
-                price_change_pct = ((curr_close - prev_close) / prev_close) * 100
-                # High volume on significant down day (>1% drop) = potential distribution
-                if price_change_pct < -1 and is_high_vol == 'Yes':
-                    df.loc[i, 'vol_spike_down'] = 'Yes'
+            else:
+                days_since_transition = 0
+                if current_stage != 'Stage 3':
+                    observed_transition = False
 
         # 7. Cross Below 30WMA (Primary Weinstein sell signal)
         df['cross_below_alert'] = '-'
@@ -793,7 +997,7 @@ class StockCalculator:
 
     def calculate_exit_score(self, df):
         """
-        Calculate exit score (0-7 based on sell signals)
+        Calculate exit score (0-10 based on sell signals)
         Higher score = Stronger sell signal
 
         Args:
@@ -837,6 +1041,21 @@ class StockCalculator:
             # Factor 7: Cross below 30WMA (primary Weinstein sell signal)
             cross_below_alert = df.iloc[i].get('cross_below_alert', '-')
             if cross_below_alert in ['SELL', 'SELL (Vol)']:
+                score += 1
+
+            # Factor 8: RS Trend weakening - the README documents this as an
+            # early-warning sign that precedes a stage transition, but it never
+            # fed the composite score before, so the mechanical exit score was
+            # always lagging behind the documented "early warning" checklist.
+            if df.iloc[i].get('rs_trend', 'N/A') == 'Weakening':
+                score += 1
+
+            # Factor 9: Bearish price/delivery divergence (price up, delivery falling)
+            if df.iloc[i].get('divergence', 'N/A') == 'Bearish':
+                score += 1
+
+            # Factor 10: Momentum breaking down across timeframes
+            if df.iloc[i].get('momentum_align', 'N/A') == 'Breaking Down':
                 score += 1
 
             df.loc[i, 'exit_score'] = score
@@ -932,17 +1151,135 @@ class StockCalculator:
             np.nan
         )
 
-        # Signal: Above/Below 200 DMA
-        df['dma_200_signal'] = df['price_vs_200dma'].apply(
-            lambda x: 'Above' if pd.notna(x) and x >= 0
-            else ('Below' if pd.notna(x) else 'N/A')
-        )
+        return df
+
+    def calculate_base_levels(self, df):
+        """
+        Identify the trading base (consolidation range) and derive the two
+        levels a Weinstein entry actually needs: where to buy, and where to
+        get out.
+
+        WHY A SKIP WINDOW: the pivot is measured over weeks
+        [-pivot_lookback_weeks .. -pivot_skip_weeks], i.e. the recent
+        `pivot_skip_weeks` are EXCLUDED. Without that, a stock that has just
+        broken out redefines its own pivot to the breakout high, and
+        'Dist to Pivot' collapses to ~0% for every name that has already
+        moved. Skipping the last few weeks keeps the pivot anchored to the
+        pre-breakout resistance line, which is the level Weinstein buys
+        through and the number that tells you whether you are early or
+        chasing.
+
+        STOP RULE (Weinstein): initial stop sits below the base; as the stock
+        advances the 30WMA rises and becomes the binding line, which is the
+        stop you trail. Taking max(base_low, 30WMA) reproduces that
+        automatically — early on the base low is higher, later the WMA is.
+
+        Adds:
+          pivot_price          — resistance line of the base (buy trigger)
+          dist_to_pivot_pct    — <0 not yet triggered, >0 already extended
+          base_length_weeks    — weeks price stayed inside the base
+          base_depth_pct       — base height as % of pivot (tight = better)
+          stop_level           — max(base low, 30WMA) less a buffer
+          dist_to_stop_pct     — how much room to the stop, as % of price
+        """
+        df = df.copy()
+        for col in ('pivot_price', 'dist_to_pivot_pct', 'base_depth_pct',
+                    'stop_level', 'dist_to_stop_pct'):
+            df[col] = np.nan
+        df['base_length_weeks'] = 0
+
+        if df.empty or 'week' not in df.columns:
+            return df
+
+        lookback_w = self.pivot_lookback_weeks
+        skip_w = self.pivot_skip_weeks
+        max_depth = self.base_max_depth_pct
+        buffer = self.stop_buffer_pct / 100.0
+        fallback = self.fallback_stop_pct / 100.0
+
+        # Weekly OHLC. Fall back to close when intraday high/low are absent
+        # (older cache files) so the levels still compute, just less precisely.
+        high_src = 'high' if 'high' in df.columns else 'close'
+        low_src = 'low' if 'low' in df.columns else 'close'
+        weekly = df.groupby('week').agg(
+            w_high=(high_src, 'max'),
+            w_low=(low_src, 'min'),
+        ).reset_index()
+
+        # Week index per daily row, so each row uses only weeks that had
+        # already completed as of that row (no look-ahead).
+        week_pos = {w: i for i, w in enumerate(weekly['week'])}
+        highs = weekly['w_high'].to_numpy()
+        lows = weekly['w_low'].to_numpy()
+
+        for i in range(len(df)):
+            wi = week_pos.get(df.iloc[i]['week'])
+            if wi is None:
+                continue
+
+            end = wi - skip_w            # exclusive upper bound of the base window
+            start = max(0, end - lookback_w)
+            if end - start < self.base_min_weeks:
+                continue
+
+            win_high = highs[start:end]
+            win_low = lows[start:end]
+            if len(win_high) == 0 or not np.isfinite(win_high).any():
+                continue
+
+            pivot = float(np.nanmax(win_high))
+            if not np.isfinite(pivot) or pivot <= 0:
+                continue
+
+            # Walk back from the end of the window counting weeks that stayed
+            # inside the band [pivot*(1-max_depth), pivot]. That run length is
+            # the base; where it stops is the base floor.
+            floor = pivot * (1.0 - max_depth / 100.0)
+            length = 0
+            base_low = np.inf
+            for k in range(end - 1, start - 1, -1):
+                if np.isfinite(lows[k]) and lows[k] >= floor and np.isfinite(highs[k]) and highs[k] <= pivot * 1.001:
+                    length += 1
+                    base_low = min(base_low, float(lows[k]))
+                else:
+                    break
+
+            if length < self.base_min_weeks or not np.isfinite(base_low):
+                continue
+
+            close = df.iloc[i]['close']
+            if pd.isna(close) or close <= 0:
+                continue
+
+            df.loc[i, 'pivot_price'] = round(pivot, 2)
+            df.loc[i, 'dist_to_pivot_pct'] = ((close - pivot) / pivot) * 100
+            df.loc[i, 'base_length_weeks'] = length
+            df.loc[i, 'base_depth_pct'] = ((pivot - base_low) / pivot) * 100
+
+            # Stop: whichever of the base floor / 30WMA is higher, less buffer.
+            wma = df.iloc[i].get('weekly_wma30')
+            anchor = base_low
+            if pd.notna(wma) and wma > anchor:
+                anchor = float(wma)
+            stop = anchor * (1.0 - buffer)
+
+            # A stop must sit below the current price. For a Stage 2 pullback
+            # the 30WMA can be above price, which would otherwise produce a
+            # nonsensical stop above the entry — fall back to a fixed
+            # percentage below price in that case.
+            if stop >= close:
+                stop = min(base_low * (1.0 - buffer), close * (1.0 - fallback))
+            if stop >= close:
+                stop = close * (1.0 - fallback)
+
+            df.loc[i, 'stop_level'] = round(stop, 2)
+            df.loc[i, 'dist_to_stop_pct'] = ((close - stop) / close) * 100
 
         return df
 
     def calculate_accumulation_score(self, df):
         """
-        Calculate accumulation score (0-6 based on multiple factors)
+        Calculate accumulation score (0-7 based on multiple factors)
 
         Args:
             df: DataFrame with all calculated fields
@@ -957,15 +1294,14 @@ class StockCalculator:
             score = 0
 
             # Factor 1: Moderate positive momentum (1-month ROC between 0-15%)
-            # 1 month = ~22 trading days
-            # Goldilocks zone: gaining strength but not overheated
-            if i >= 22:
-                current_price = df.iloc[i]['close']
-                price_22d_ago = df.iloc[i-22]['close']
-                if pd.notna(current_price) and pd.notna(price_22d_ago) and price_22d_ago > 0:
-                    roc_1m = ((current_price - price_22d_ago) / price_22d_ago) * 100
-                    if 0 <= roc_1m <= 15:  # Sweet spot for accumulation
-                        score += 1
+            # Goldilocks zone: gaining strength but not overheated.
+            # roc_1m is already computed by calculate_multi_timeframe_roc
+            # (which runs earlier in the pipeline); re-using it keeps the
+            # accumulation score and the ROC column in the Excel report
+            # perfectly consistent.
+            roc_1m = df.iloc[i].get('roc_1m')
+            if pd.notna(roc_1m) and 0 <= roc_1m <= 15:
+                score += 1
 
             # Factor 2: High average delivery (30d ≥55%)
             if pd.notna(df.iloc[i]['deliv_avg_30d']) and df.iloc[i]['deliv_avg_30d'] >= 55:
@@ -975,9 +1311,12 @@ class StockCalculator:
             if df.iloc[i]['deliv_trend'] in ['Increasing', 'Stable']:
                 score += 1
 
-            # Factor 4: Price above or near 30WMA (for accumulation, we want early stage)
+            # Factor 4: Price at or above the 30WMA (allowing a small pullback
+            # buffer). No upper cap — a stock extended well above a rising
+            # WMA is a stronger Stage 2 trend, not a weaker one, so it must
+            # not be penalized relative to a stock that just started moving.
             price_vs = df.iloc[i]['price_vs_wma_pct']
-            if pd.notna(price_vs) and -5 <= price_vs <= 10:  # Within 5% below to 10% above
+            if pd.notna(price_vs) and price_vs >= -5:
                 score += 1
 
             # Factor 5: 30WMA flat or rising (not falling)
@@ -990,6 +1329,16 @@ class StockCalculator:
             recent_10 = df.iloc[start_idx:i + 1]
             high_vol_days = (recent_10['is_high_vol'] == 'Yes').sum()
             if high_vol_days >= 5:  # 50% of last 10 days had high volume
+                score += 1
+
+            # Factor 7: Relative strength vs NIFTY is positive - Weinstein's own
+            # rule that a Stage 2/accumulating stock must be a market leader, not
+            # a laggard "riding a bull market". This was previously computed
+            # elsewhere (calculate_relative_strength) but never fed into the
+            # score investors are told to sort/filter on, so an underperforming
+            # stock could still post a high accumulation score.
+            rs_ratio = df.iloc[i].get('rs_ratio')
+            if pd.notna(rs_ratio) and rs_ratio > 0:
                 score += 1
 
             df.loc[i, 'accum_score'] = score
@@ -1016,6 +1365,10 @@ class StockCalculator:
 
         # Sort by date
         df = df.sort_values('date').reset_index(drop=True)
+
+        # Detect corporate actions (splits/bonuses) — must run before any
+        # technical indicator that depends on historically comparable prices
+        df = self.detect_corporate_actions(df)
 
         # Calculate delivery percentage
         df = self.calculate_delivery_percentage(df)
@@ -1050,6 +1403,9 @@ class StockCalculator:
         # Calculate Weinstein metrics
         df = self.calculate_weinstein_metrics(df)
 
+        # Calculate Triple Confirm signal (price > 30WMA + high volume + high delivery)
+        df = self.calculate_triple_confirm(df)
+
         # Calculate delivery trends
         df = self.calculate_delivery_trends(df)
 
@@ -1073,6 +1429,9 @@ class StockCalculator:
 
         # Calculate 200 DMA
         df = self.calculate_200dma(df)
+
+        # Base / pivot / stop levels (needs weekly_wma30 from calculate_weekly_wma)
+        df = self.calculate_base_levels(df)
 
         # Calculate accumulation score
         df = self.calculate_accumulation_score(df)

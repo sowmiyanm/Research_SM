@@ -155,7 +155,7 @@ These columns quantify **how consistently institutions are accumulating**.
 | **Deliv Avg(10d)** | Recent 10-day average delivery % | Shows **current** institutional interest. Compare to 30d avg: if 10d > 30d, interest is accelerating. |
 | **Deliv Avg(30d)** | Sustained 30-day average delivery % | Shows **sustained** interest. >= 55% = strong institutional presence. < 40% = mostly speculative activity. |
 | **Deliv Trend** | Increasing / Stable / Decreasing | Direction of delivery momentum. Increasing in Stage 1/2 = bullish. Decreasing in Stage 2/3 = distribution warning. |
-| **Accum Score** | Multi-factor accumulation score (0-6) | **One-number quality rating.** 5-6 = high conviction buy candidate. 4 = solid. 3 = moderate. <= 2 = not in accumulation. Sort descending to find best candidates. |
+| **Accum Score** | Multi-factor accumulation score (0-7) | **One-number quality rating.** 5-7 = high conviction buy candidate. 4 = solid. 3 = moderate. <= 2 = not in accumulation. Sort descending to find best candidates. |
 | **Count (>=50%)/45** | Days with delivery >= 50% in last 45 days | Raw consistency measure. Higher = more sustained accumulation. |
 | **Count (>=40%)/45** | Days with delivery >= 40% in last 45 days | Broader consistency including moderate interest. |
 | **Count (>=50% + HighVol)/45** | Days with delivery >= 50% AND volume > MA | **The strongest confirmation.** High delivery alone could be low-volume noise. This requires BOTH. >= 15/45 = strong accumulation. |
@@ -169,9 +169,9 @@ These columns tell you **when to sell or avoid**. Each maps to a specific risk.
 
 | Indicator | What It Shows | Analyst Use |
 |-----------|---------------|-------------|
-| **Exit Score** | Combined sell signal strength (0-7) | **Overall danger level.** >= 4 (red) = strong sell, act immediately. 2-3 (yellow) = warning, tighten stops. 0-1 = healthy. |
+| **Exit Score** | Combined sell signal strength (0-10) | **Overall danger level.** >= 6 (red) = strong sell, act immediately. 3-5 (yellow) = warning, tighten stops. 0-2 = healthy. |
 | **Cross Below WMA** | `SELL (Vol)` or `SELL` or `-` | **Primary Weinstein sell signal.** `SELL (Vol)` (red) = volume-confirmed break below 30WMA. This is the mechanical exit — do not argue with it. `SELL` (yellow) = unconfirmed but still a warning. |
-| **Distribution Alert** | Yes/No | Near 52W high + declining delivery momentum = institutions distributing shares to retail. Classic top signal. |
+| **Distribution Alert** | Yes/No | (A) Near 52W high + declining delivery = institutions distributing shares to retail. (B) Stage 3/4 + declining delivery + down-day volume spikes = sustained post-breakdown distribution. Both are classic top signals. |
 | **Stage 3 Alert** | Exit Signal / Stage 3 / - | "Exit Signal" (red) = stock just transitioned from Stage 2 to Stage 3. This is the earliest stage-based exit trigger. |
 | **Trend Break** | Higher High / Lower High / Neutral | Lower High (yellow) = price structure is deteriorating. In Stage 2, this is an early warning. In Stage 3, it confirms distribution. |
 | **Price vs 10MA** | Above / Below | Short-term trend check. Below 10MA = short-term weakness. Multiple days below 10MA in Stage 2 = pullback or potential stage change. |
@@ -196,7 +196,7 @@ These columns help find **turnaround candidates** — stocks basing in Stage 1 t
 
 ## Scoring Systems
 
-### Accumulation Score (0-6) — "Should I buy this?"
+### Accumulation Score (0-7) — "Should I buy this?"
 
 | Factor | Criteria | Why |
 |--------|----------|-----|
@@ -206,18 +206,22 @@ These columns help find **turnaround candidates** — stocks basing in Stage 1 t
 | Price vs WMA | -5% to +10% | Early stage, not overextended |
 | WMA Slope | Flat or Rising | Trend support present |
 | Volume Consistency | 5+ of last 10 days > MA | Sustained participation, not one-off spike |
+| RS vs NIFTY | > 0 (outperforming) | Weinstein's rule — buy market leaders, not laggards |
 
-### Exit Score (0-7) — "Should I sell this?"
+### Exit Score (0-10) — "Should I sell this?"
 
 | Factor | What triggers it |
 |--------|-----------------|
 | Stage 3 or 4 | In distribution or downtrend phase |
 | Cross below 30WMA | Primary Weinstein sell signal |
-| Distribution alert | Near 52W high + falling delivery |
+| Distribution alert | Near 52W high + falling delivery, OR Stage 3/4 + declining delivery + volume spikes down |
 | Declining delivery momentum | Institutional money leaving |
 | Price below 10-day MA | Short-term weakness |
 | Lower high pattern | Trend structure breaking down |
 | RSI overbought in Stage 3/4 | Exhaustion at the top |
+| RS Trend weakening | Early warning of stage transition |
+| Bearish divergence | Price up but delivery falling — distribution |
+| Momentum breaking down | ROC alignment failing across timeframes |
 
 ## Analyst Playbook
 
@@ -247,7 +251,7 @@ Step 11: Scan daily columns for recent purple/dark green     → visual confirma
 
 ```
 Check daily:
-  - Exit Score climbing? (>= 2 = attention, >= 4 = sell)
+  - Exit Score climbing? (>= 3 = attention, >= 6 = sell)
   - Cross Below WMA? (especially "SELL (Vol)" = immediate exit)
   - Divergence = "Bearish"? (delivery falling while price rises = distribution)
   - RS Trend = "Weakening"? (losing relative strength vs market)
@@ -337,7 +341,20 @@ Delivery Data       PE Ratio                  Promoter Holding %       for Relat
   "evaluation_days": 45,
   "volume_ma_period": 36,
   "weekly_wma_period": 30,
-  "delivery_bins": { ... }
+  "volume_ma_multiplier": 1.0,
+  "breakout_volume_multiplier": 2.0,
+  "wma_slope_threshold_pct": 2.0,
+  "stale_days_threshold": 4,
+  "delivery_bins": { ... },
+  "shortlist": {
+    "min_adv_crore": 5,
+    "stages": ["Stage 2", "Stage 2 (Pullback)"],
+    "min_rs": 0,
+    "max_exit_score": 2,
+    "min_deliv_30d": 45,
+    "exclude_corp_action": true,
+    "top_n": 50
+  }
 }
 ```
 
@@ -380,7 +397,12 @@ Weekly WMA       = Weighted MA on weekly closes (weights 1..30)
 WMA Slope        = (current_wma - wma_4weeks_ago) / wma_4weeks_ago * 100
                    > 2% = Rising, < -2% = Falling, else Flat
 Cross Above      = prev_week_close < prev_WMA AND curr_week_close >= curr_WMA
-Cross Confirmed  = Cross Above AND week_avg_volume_ratio > 1.0
+Cross Confirmed  = Cross Above AND week_avg_volume_ratio > breakout_volume_multiplier (2.0)
+                   Note: is_high_vol (used in the daily delivery/accumulation grid and
+                   Triple Confirm) uses a separate, lower threshold — volume_ma_multiplier
+                   (1.0) — since Weinstein's 2x rule governs breakout-week confirmation,
+                   not everyday delivery quality.
+Triple Confirm   = price_vs_wma_pct >= 0 AND is_high_vol AND delivery_pct >= 50 (same day)
 RS vs NIFTY      = stock_52d_ROC - nifty_52d_ROC (positive = outperform)
 RSI (14)         = Standard EMA-based RSI
 52W High/Low     = From NSE quote API (authoritative), fallback to rolling calc
