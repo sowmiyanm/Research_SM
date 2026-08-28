@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import time
 import logging
 import io
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
 
@@ -422,11 +422,20 @@ class NSEDataFetcher:
 
         results = {}
 
+        # Why-it-failed tally. Every per-symbol failure used to go to
+        # logger.debug, which is off at the default INFO level — so a run where
+        # all 1061 tickers failed printed "0/1061 succeeded" and nothing else,
+        # with 1061 exceptions caught and discarded. The reason has to survive
+        # to the summary line or there is no way to diagnose it.
+        failures = Counter()
+
         def _fetch_single_quote(symbol):
             try:
                 time.sleep(0.2)  # Rate limiting: 200ms between requests
                 url = f"{self.base_url}/api/quote-equity?symbol={symbol}"
                 response = quote_session.get(url, headers=self.headers, timeout=10)
+                if response.status_code != 200:
+                    failures[f"HTTP {response.status_code}"] += 1
                 if response.status_code == 200:
                     data = response.json()
                     week_52 = data.get('priceInfo', {}).get('weekHighLow', {})
@@ -452,8 +461,10 @@ class NSEDataFetcher:
                                     result[key] = None
 
                         return symbol, result
+                    failures['200 but no weekHighLow in payload'] += 1
                 return symbol, None
             except Exception as e:
+                failures[type(e).__name__] += 1
                 logger.debug(f"Quote fetch failed for {symbol}: {e}")
                 return symbol, None
 
@@ -465,11 +476,29 @@ class NSEDataFetcher:
                     symbol, data = future.result()
                     if data:
                         results[symbol] = data
-                except Exception:
-                    pass
+                except Exception as e:
+                    failures[f"future:{type(e).__name__}"] += 1
 
-        logger.info(f"Quote data fetched: {len(results)}/{len(tickers)} tickers succeeded")
+        self._log_fetch_outcome("Quote", len(results), len(tickers), failures)
         return results
+
+    @staticmethod
+    def _log_fetch_outcome(label, n_ok, n_total, failures):
+        """Report a batch fetch result, including WHY it failed.
+
+        Logged at WARNING (not INFO) when nothing succeeded, so a total
+        blackout cannot scroll past unnoticed in a long run.
+        """
+        msg = f"{label} data fetched: {n_ok}/{n_total} tickers succeeded"
+        if failures:
+            top = ', '.join(f"{c}x {r}" for r, c in failures.most_common(4))
+            msg += f" | failures: {top}"
+        if n_ok == 0 and n_total > 0:
+            logger.warning(f"{msg}  <-- NOTHING succeeded; the dependent columns will be blank")
+        elif n_ok < n_total * 0.5:
+            logger.warning(msg)
+        else:
+            logger.info(msg)
 
     def fetch_promoter_holding_batch(self, tickers: List[str]) -> Dict[str, Dict]:
         """
@@ -496,12 +525,15 @@ class NSEDataFetcher:
             return {}
 
         results = {}
+        failures = Counter()
 
         def _fetch_single_promoter(symbol):
             try:
                 time.sleep(0.15)  # Rate limiting
                 url = f"{self.base_url}/api/corp-info?symbol={symbol}&corpType=shp&market=equities"
                 response = promo_session.get(url, headers=self.headers, timeout=15)
+                if response.status_code != 200:
+                    failures[f"HTTP {response.status_code}"] += 1
                 if response.status_code == 200:
                     data = response.json()
 
@@ -562,6 +594,7 @@ class NSEDataFetcher:
                     }
                 return symbol, None
             except Exception as e:
+                failures[type(e).__name__] += 1
                 logger.debug(f"Promoter data fetch failed for {symbol}: {e}")
                 return symbol, None
 
@@ -572,10 +605,10 @@ class NSEDataFetcher:
                     symbol, data = future.result()
                     if data and data.get('promoter_pct') is not None:
                         results[symbol] = data
-                except Exception:
-                    pass
+                except Exception as e:
+                    failures[f"future:{type(e).__name__}"] += 1
 
-        logger.info(f"Promoter data fetched: {len(results)}/{len(tickers)} tickers succeeded")
+        self._log_fetch_outcome("Promoter", len(results), len(tickers), failures)
         return results
 
     def fetch_financial_results_batch(self, tickers: List[str]) -> Dict[str, Dict]:
@@ -603,6 +636,7 @@ class NSEDataFetcher:
             return {}
 
         results = {}
+        failures = Counter()
 
         def _extract_profit_from_xbrl(xbrl_url):
             """Extract ProfitLossForPeriod from XBRL XML"""
@@ -656,6 +690,7 @@ class NSEDataFetcher:
                 url = f"{self.base_url}/api/corporates-financial-results?index=equities&symbol={symbol}&period=Quarterly"
                 response = fin_session.get(url, headers=self.headers, timeout=15)
                 if response.status_code != 200:
+                    failures[f"HTTP {response.status_code}"] += 1
                     return symbol, None
 
                 data = response.json()
@@ -735,10 +770,10 @@ class NSEDataFetcher:
                     symbol, data = future.result()
                     if data and data.get('latest_profit') is not None:
                         results[symbol] = data
-                except Exception:
-                    pass
+                except Exception as e:
+                    failures[f"future:{type(e).__name__}"] += 1
 
-        logger.info(f"Financial data fetched: {len(results)}/{len(tickers)} tickers succeeded")
+        self._log_fetch_outcome("Financial", len(results), len(tickers), failures)
         return results
 
     def get_stock_data_batch(self, symbols: List[str], from_date=None, to_date=None) -> Dict[str, pd.DataFrame]:
