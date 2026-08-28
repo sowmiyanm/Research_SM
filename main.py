@@ -12,8 +12,12 @@ import json
 import logging
 import sys
 import argparse
+import os
+import shutil
+import glob
 from datetime import datetime, timedelta
 import time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
 import pandas as pd
@@ -62,6 +66,176 @@ class StockScreener:
         self.batch_size = batch_size
         self.max_workers = max_workers
         self.skip_financials = skip_financials
+
+    # ══════════════════════════════════════════════════════════════════
+    #  Cache safety net — backup / restore / prune
+    # ══════════════════════════════════════════════════════════════════
+
+    def _backup_cache(self):
+        """Snapshot the cache directory before a destructive rebuild.
+
+        A monthly rebuild deletes ~1,000 ticker histories and re-downloads
+        501 bhav copies over 40-70 minutes. Runs DO die partway — one already
+        has (it stopped at ticker 823 and left a truncated Excel file behind).
+        Without a snapshot, an interrupted rebuild leaves a partial universe
+        and no way back.
+
+        Returns the backup path, or None if there was nothing to back up.
+        """
+        cache_dir = self.cache.cache_dir
+        if not os.path.isdir(cache_dir) or not os.listdir(cache_dir):
+            logger.info("No existing cache to back up")
+            return None
+
+        stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup = f"{cache_dir.rstrip('/')}_backup_{stamp}"
+        logger.info(f"Backing up cache -> {backup} (this can take a moment)")
+        try:
+            shutil.copytree(cache_dir, backup)
+            n_pkl = len(glob.glob(os.path.join(backup, '*.pkl')))
+            logger.info(f"Backup complete: {n_pkl} ticker files")
+            return backup
+        except Exception as e:
+            logger.error(f"Cache backup FAILED: {e}")
+            return None
+
+    def _restore_cache(self, backup):
+        """Roll the cache back to a snapshot after a failed rebuild."""
+        if not backup or not os.path.isdir(backup):
+            logger.error("Cannot restore — backup missing")
+            return False
+        cache_dir = self.cache.cache_dir
+        try:
+            broken = f"{cache_dir.rstrip('/')}_failed_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            if os.path.isdir(cache_dir):
+                shutil.move(cache_dir, broken)
+            shutil.move(backup, cache_dir)
+            logger.warning(f"Cache RESTORED from backup. Failed attempt kept at {broken}")
+            return True
+        except Exception as e:
+            logger.error(f"Cache restore FAILED: {e} — backup is still at {backup}")
+            return False
+
+    def _prune_backups(self, keep=2):
+        """Keep only the most recent N backups so they don't accumulate."""
+        pattern = f"{self.cache.cache_dir.rstrip('/')}_backup_*"
+        backups = sorted(glob.glob(pattern))
+        for old in backups[:-keep] if len(backups) > keep else []:
+            try:
+                shutil.rmtree(old)
+                logger.info(f"Pruned old backup {os.path.basename(old)}")
+            except Exception as e:
+                logger.warning(f"Could not prune {old}: {e}")
+
+    # ══════════════════════════════════════════════════════════════════
+    #  Post-run health check
+    # ══════════════════════════════════════════════════════════════════
+
+    def _health_check(self, tickers, ticker_data):
+        """Verify the run actually produced a complete, current, clean cache.
+
+        This exists because a partial run is otherwise INVISIBLE. A process
+        killed mid-run prints nothing at all, and a ticker whose fetch returns
+        nothing falls back to cached data and is reported as a success (✓).
+        That combination is how 229 tickers sat 9 trading days stale for two
+        weeks without anything flagging it.
+
+        Returns a dict of results; logs WARNINGs for anything wrong.
+        """
+        logger.info("\n" + "=" * 80)
+        logger.info("HEALTH CHECK")
+        logger.info("=" * 80)
+
+        expected = set(tickers)
+        cached = {os.path.basename(p)[:-4] for p in glob.glob(os.path.join(self.cache.cache_dir, '*.pkl'))}
+        cached.discard('NIFTY_50')
+        missing = sorted(expected - cached)
+
+        # Freshness + duplicates, computed from the in-memory frames (free)
+        last_dates, dupes = {}, {}
+        for t, df in ticker_data.items():
+            if df is None or df.empty or 'date' not in df.columns:
+                continue
+            d = pd.to_datetime(df['date'])
+            last_dates[t] = d.max()
+            n = int(d.duplicated().sum())
+            if n:
+                dupes[t] = n
+
+        newest = max(last_dates.values()) if last_dates else None
+
+        # Split "behind" into two very different problems:
+        #
+        #   STALE     — days behind, a re-run catches it up. Actionable.
+        #   DELISTED  — months behind. The symbol has been delisted, suspended
+        #               or renamed (ZOMATO -> ETERNAL, TATAMOTORS demerged,
+        #               GENSOL suspended). Re-running will NEVER fix these.
+        #
+        # Reporting them together would put ~30 permanent warnings on every
+        # single run, and a warning you always see is a warning you stop
+        # reading — which would defeat the point of this whole check.
+        DELISTED_DAYS = self.config.get('delisted_days_threshold', 60)
+        stale, delisted = [], []
+        if newest is not None:
+            for t, v in last_dates.items():
+                behind = (newest - v).days
+                if behind >= DELISTED_DAYS:
+                    delisted.append((t, v))
+                elif behind >= 3:
+                    stale.append((t, v))
+        stale.sort(key=lambda x: x[1])
+        delisted.sort(key=lambda x: x[1])
+
+        # Corrupt Excel backups (truncated by an interrupted non-atomic write)
+        corrupt = []
+        try:
+            import zipfile
+            for p in glob.glob(os.path.join(self.cache.excel_cache_dir, '*.xlsx')):
+                if not zipfile.is_zipfile(p):
+                    corrupt.append(os.path.basename(p))
+        except Exception:
+            pass
+
+        coverage = 100.0 * len(cached & expected) / len(expected) if expected else 0.0
+        logger.info(f"Coverage    : {len(cached & expected)}/{len(expected)} tickers cached ({coverage:.1f}%)")
+        logger.info(f"Newest date : {newest.date() if newest is not None else 'n/a'}")
+        logger.info(f"Stale (3d+) : {len(stale)}")
+        logger.info(f"Delisted?   : {len(delisted)} ({DELISTED_DAYS}d+ behind)")
+        logger.info(f"Duplicates  : {len(dupes)} tickers")
+        logger.info(f"Corrupt xlsx: {len(corrupt)}")
+
+        # ── Actionable problems (WARNING) ──
+        if missing:
+            logger.warning(f"MISSING from cache ({len(missing)}): "
+                           f"{', '.join(missing[:15])}{'...' if len(missing) > 15 else ''}")
+        if stale:
+            logger.warning(f"STALE — not on {newest.date()} ({len(stale)}). Oldest: "
+                           + ', '.join(f"{t} {v.date()}" for t, v in stale[:8]))
+            logger.warning("  Re-run to catch these up. Check the 'As Of' column before "
+                           "trusting signals for any of them.")
+        if dupes:
+            logger.warning(f"DUPLICATE trading days in {len(dupes)} tickers: {list(dupes)[:8]} "
+                           f"— rolling windows are wrong for these. Rebuild them.")
+        if corrupt:
+            logger.warning(f"CORRUPT Excel backups ({len(corrupt)}): {corrupt[:8]}. "
+                           f"The pickle is still authoritative; delete these so they get rewritten.")
+
+        # ── Not actionable by re-running: report at INFO so it doesn't drown
+        #    the warnings above, but keep it visible so the list can be pruned.
+        if delisted:
+            logger.info(
+                f"Likely delisted / renamed / suspended ({len(delisted)}) — a re-run will NOT "
+                f"fix these; consider removing them from tickers.txt:"
+            )
+            logger.info("  " + ', '.join(f"{t} ({v.date()})" for t, v in delisted[:20])
+                        + ('...' if len(delisted) > 20 else ''))
+
+        if not (missing or stale or dupes or corrupt):
+            extra = f" ({len(delisted)} delisted tickers ignored)" if delisted else ""
+            logger.info(f"All clear — cache is complete, current and clean{extra}.")
+
+        return {'coverage': coverage, 'missing': missing, 'stale': stale,
+                'delisted': delisted, 'dupes': dupes, 'corrupt': corrupt, 'newest': newest}
 
     def _load_config(self, config_file):
         """Load configuration from JSON file"""
@@ -443,16 +617,12 @@ class StockScreener:
         if failed_tickers:
             logger.info(f"\nFailed tickers ({len(failed_tickers)}): {', '.join(failed_tickers[:20])}{'...' if len(failed_tickers) > 20 else ''}")
 
-        # Show cache info
-        cache_info = self.cache.get_cache_info()
-        if not cache_info.empty:
-            logger.info("\n" + "=" * 80)
-            logger.info("CACHE INFO")
-            logger.info("=" * 80)
-            logger.info(f"Cached tickers: {len(cache_info)}")
-            logger.info(f"Total cached records: {cache_info['records'].sum()}")
+        # Always health-check: a partial run is otherwise indistinguishable
+        # from a complete one.
+        health = self._health_check(tickers, ticker_data)
 
         logger.info("\nScreener completed!")
+        return health
 
 
 def main():
@@ -462,14 +632,31 @@ def main():
     )
     parser.add_argument(
         '--mode',
-        choices=['auto', 'initial', 'incremental'],
-        default='auto',
-        help='Run mode: auto (detect), initial (full load), incremental (updates only)'
+        choices=['daily', 'monthly', 'auto', 'initial', 'incremental'],
+        default='daily',
+        help=(
+            'daily   : fetch only new trading days since the last run (fast, use this most days). '
+            'monthly : back up the cache, wipe it, and rebuild the full 2-year history from '
+            'scratch — automatically rolls back if the rebuild fails. '
+            '(auto/initial/incremental are the older equivalents and still work.)'
+        )
     )
     parser.add_argument(
         '--clear-cache',
         action='store_true',
-        help='Clear all cached data before running'
+        help='Clear all cached data before running (implied by --mode monthly)'
+    )
+    parser.add_argument(
+        '--no-backup',
+        action='store_true',
+        help='Skip the pre-rebuild cache backup in --mode monthly (not recommended)'
+    )
+    parser.add_argument(
+        '--min-coverage',
+        type=float,
+        default=80.0,
+        help='Monthly rebuild must end with at least this %% of tickers cached, '
+             'else the backup is restored (default: 80)'
     )
     parser.add_argument(
         '--batch-size',
@@ -491,26 +678,71 @@ def main():
 
     args = parser.parse_args()
 
+    # Map the friendly modes onto the internal fetch strategy.
+    #   daily   -> auto     (cached tickers go incremental, new ones full)
+    #   monthly -> initial  (full window for every ticker) + wipe + safety net
+    is_monthly = args.mode == 'monthly'
+    internal_mode = {'daily': 'auto', 'monthly': 'initial'}.get(args.mode, args.mode)
+
+    backup = None
     try:
         screener = StockScreener(
-            mode=args.mode,
+            mode=internal_mode,
             batch_size=args.batch_size,
             max_workers=args.max_workers,
             skip_financials=args.skip_financials
         )
 
-        if args.clear_cache:
+        if is_monthly:
+            logger.info("=" * 80)
+            logger.info("MONTHLY REBUILD — full 2-year history will be re-downloaded")
+            logger.info("Expect roughly 40-70 minutes and ~0.7 GB of downloads")
+            logger.info("=" * 80)
+            if not args.no_backup:
+                backup = screener._backup_cache()
+            logger.info("Clearing cache for a clean rebuild...")
+            screener.cache.clear_cache()
+
+        elif args.clear_cache:
             logger.info("Clearing cache...")
             screener.cache.clear_cache()
 
-        screener.run()
+        health = screener.run()
+
+        # Safety net: if a monthly rebuild ended up with a badly incomplete
+        # cache (process killed, network died, NSE blocked us), put the old
+        # cache back rather than leaving a half-built one in place.
+        if is_monthly and backup and health:
+            if health['coverage'] < args.min_coverage:
+                logger.error(
+                    f"Rebuild finished with only {health['coverage']:.1f}% coverage "
+                    f"(minimum {args.min_coverage}%) — ROLLING BACK to the pre-rebuild cache."
+                )
+                screener._restore_cache(backup)
+                logger.error("Rolled back. Re-run --mode monthly when the connection is stable.")
+                sys.exit(2)
+            logger.info(f"Rebuild healthy ({health['coverage']:.1f}% coverage) — keeping it.")
+            screener._prune_backups(keep=2)
+
     except KeyboardInterrupt:
-        logger.info("\nScreener interrupted by user")
+        logger.warning("\nScreener interrupted by user")
+        if is_monthly and backup:
+            logger.warning("Monthly rebuild was interrupted — restoring the pre-rebuild cache.")
+            try:
+                StockScreener(mode='auto')._restore_cache(backup)
+            except Exception as e:
+                logger.error(f"Restore failed: {e}. Your backup is intact at {backup}")
         sys.exit(0)
     except Exception as e:
         logger.error(f"Fatal error: {e}")
         import traceback
         traceback.print_exc()
+        if is_monthly and backup:
+            logger.error("Monthly rebuild crashed — restoring the pre-rebuild cache.")
+            try:
+                StockScreener(mode='auto')._restore_cache(backup)
+            except Exception as e2:
+                logger.error(f"Restore failed: {e2}. Your backup is intact at {backup}")
         sys.exit(1)
 
 

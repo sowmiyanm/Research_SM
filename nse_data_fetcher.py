@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import time
 import logging
 import io
+import threading
 from collections import OrderedDict, Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
@@ -57,7 +58,11 @@ class NSEDataFetcher:
     def __init__(self):
         self.base_url = "https://www.nseindia.com"
         self.archives_url = "https://archives.nseindia.com"
-        self.session = _make_session()
+        # `session` is a per-thread property (see below) — worker threads must
+        # not share one requests.Session.
+        self._thread_local = threading.local()
+        # Guards the bhav-copy LRU below, which several worker threads mutate.
+        self._cache_lock = threading.Lock()
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'Accept': '*/*',
@@ -122,9 +127,36 @@ class NSEDataFetcher:
             datetime(2026, 12, 25),  # Christmas
         }
 
+        # 2027 NSE Trading Holidays
+        # PROVISIONAL — NSE publishes the official list late in the preceding
+        # year. Festival dates here follow the standard almanac and should be
+        # checked against https://www.nseindia.com/regulations/trading-holidays
+        # once published. Getting one wrong is benign: the fetcher requests a
+        # bhav copy for that date, gets nothing back, and skips it. The cost is
+        # a wasted request, not wrong data.
+        self.trading_holidays_2027 = {
+            datetime(2027, 1, 26),   # Republic Day
+            datetime(2027, 2, 21),   # Mahashivratri
+            datetime(2027, 3, 11),   # Holi
+            datetime(2027, 3, 19),   # Id-Ul-Fitr (Eid)
+            datetime(2027, 3, 26),   # Good Friday
+            datetime(2027, 4, 14),   # Dr. Ambedkar Jayanti
+            datetime(2027, 5, 26),   # Eid-Ul-Adha (Bakri Eid)
+            datetime(2027, 8, 15),   # Independence Day (Sunday)
+            datetime(2027, 9, 6),    # Ganesh Chaturthi
+            datetime(2027, 10, 2),   # Gandhi Jayanti
+            datetime(2027, 10, 8),   # Dussehra
+            datetime(2027, 11, 8),   # Diwali (Laxmi Pujan)
+            datetime(2027, 11, 9),   # Diwali Balipratipada
+            datetime(2027, 11, 13),  # Guru Nanak Jayanti
+            datetime(2027, 12, 25),  # Christmas (Saturday)
+        }
+
         # Combined holidays for all supported years
-        self.trading_holidays = self.trading_holidays_2025 | self.trading_holidays_2026
-        self._holiday_calendar_years = {2025, 2026}
+        self.trading_holidays = (self.trading_holidays_2025
+                                 | self.trading_holidays_2026
+                                 | self.trading_holidays_2027)
+        self._holiday_calendar_years = {2025, 2026, 2027}
         self._warned_missing_holiday_years = set()
 
         # Weekends (Saturday=5, Sunday=6 are non-trading days)
@@ -200,22 +232,49 @@ class NSEDataFetcher:
             return pd.DataFrame()
 
     def _get_or_fetch_bhavcopy(self, date):
-        """Get bhav copy from cache or fetch if not cached"""
+        """Get bhav copy from cache or fetch if not cached.
+
+        THREAD SAFETY: this runs under ThreadPoolExecutor(max_workers=4) from
+        main._process_single_ticker. OrderedDict.move_to_end() and popitem()
+        are not atomic — a reproducible KeyError shows up under concurrent
+        access (measured: 1 failure per ~32,000 operations across 8 threads).
+        The lock is only held around the dict operations, never across the
+        network fetch, so concurrency is preserved where it matters.
+        """
         date_key = date.strftime("%Y%m%d")
 
-        if date_key in self.cache:
-            self.cache.move_to_end(date_key)
-            return self.cache[date_key]
+        with self._cache_lock:
+            if date_key in self.cache:
+                self.cache.move_to_end(date_key)
+                return self.cache[date_key]
 
-        # Fetch bhav copy with delivery data
+        # Fetch OUTSIDE the lock — this is the slow part and must stay parallel.
         df = self._fetch_combined_bhavcopy(date)
 
         if not df.empty:
-            self.cache[date_key] = df
-            if len(self.cache) > self._bhavcopy_cache_max:
-                self.cache.popitem(last=False)
+            with self._cache_lock:
+                # Another thread may have inserted the same date while we were
+                # fetching; setting it again is harmless and keeps LRU order.
+                self.cache[date_key] = df
+                while len(self.cache) > self._bhavcopy_cache_max:
+                    self.cache.popitem(last=False)
 
         return df
+
+    @property
+    def session(self):
+        """Per-thread requests.Session.
+
+        A single Session shared across worker threads means a shared cookie
+        jar and connection pool, which requests does not guarantee to be
+        thread-safe. The three API fetchers already build their own sessions
+        for exactly this reason; this makes the bhav-copy path consistent.
+        """
+        s = getattr(self._thread_local, 'session', None)
+        if s is None:
+            s = _make_session()
+            self._thread_local.session = s
+        return s
 
     def _fetch_combined_bhavcopy(self, date):
         """

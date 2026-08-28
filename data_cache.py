@@ -167,15 +167,29 @@ class DataCache:
             # run killed partway). Because load_ticker_data tries the pickle
             # first, a corrupt Excel backup is silent until the day the pickle
             # is lost and the fallback is needed.
+            # NOTE: the temp file must keep a .xlsx suffix — pandas picks the
+            # Excel engine from the file extension, and a ".tmp" suffix fails
+            # with "No engine for filetype: 'tmp'". The leading dot in the
+            # prefix keeps it hidden and the glob patterns elsewhere only pick
+            # up '*.xlsx' at the top level of the excel dir, so a stray temp is
+            # still distinguishable by its dot-prefix.
             fd, tmp_xlsx = tempfile.mkstemp(dir=self.excel_cache_dir,
-                                            prefix=f".{ticker}.", suffix=".xlsx.tmp")
+                                            prefix=f".{ticker}.tmp.", suffix=".xlsx")
             os.close(fd)
             try:
-                df_excel.to_excel(tmp_xlsx, index=False, sheet_name=ticker[:31])
+                df_excel.to_excel(tmp_xlsx, index=False,
+                                  sheet_name=str(ticker)[:31], engine='openpyxl')
                 os.replace(tmp_xlsx, excel_path)
-            except Exception:
+            except BaseException:
+                # BaseException, not Exception: a Ctrl-C during the write is
+                # KeyboardInterrupt, which is exactly the case this atomic
+                # write exists for. Catching only Exception would leave the
+                # partial temp file on disk on every interrupted run.
                 if os.path.exists(tmp_xlsx):
-                    os.remove(tmp_xlsx)
+                    try:
+                        os.remove(tmp_xlsx)
+                    except OSError:
+                        pass
                 raise
             logger.info(f"Saved {len(df)} records to Excel cache for {ticker}")
         except Exception as e:

@@ -2,6 +2,12 @@
 # Auto-generated from Stock_Information/Tickers_MCAP_Industry.xlsx
 # Lines starting with # are comments
 
+# --- 2026-08-28: 30 symbols commented out (no EQ-series data for 60+ days) ---
+#     20 long-dead (180d+): almost certainly delisted, renamed or merged.
+#     10 borderline (60-180d): NSE bhav copy is filtered to SERIES=='EQ', so a move
+#     to the BE/BZ surveillance series looks identical to a delisting. Re-check these before
+#     writing them off — uncomment to restore. Backup: tickers_backup_20260828.txt
+#
 AARTIDRUGS
 ABBOTINDIA
 AJANTPHARM
@@ -42,17 +48,17 @@ PFIZER
 ROSSARI
 RPGLIFE
 SANOFI
-SEQUENT
+# SEQUENT    # no EQ data since 2026-01-22 (217d) - delisted/renamed
 SMSPHARMA
 SOLARA
 SPARC
 STAR
 SUNPHARMA
-SUVENPHAR
+# SUVENPHAR    # no EQ data since 2025-05-16 (468d) - delisted/renamed
 ARTEMISMED
 SYNGENE
 TORNTPHARM
-KOPRAN
+# KOPRAN    # no EQ data since 2026-05-29 (90d) - VERIFY - may be an EQ->BE series move
 UNICHEMLAB
 SHILPAMED
 PGHH
@@ -125,7 +131,7 @@ BEPL
 BHARATRAS
 CAMLINFINE
 HERANBA
-HEUBACHIND
+# HEUBACHIND    # no EQ data since 2026-01-19 (220d) - delisted/renamed
 DEEPAKNTR
 PRIVISCL
 FINEORG
@@ -160,7 +166,7 @@ FCL
 VISHNU
 CHEMPLASTS
 SHARDACROP
-AMIORG
+# AMIORG    # no EQ data since 2025-05-30 (454d) - delisted/renamed
 AETHER
 DCW
 YASHO
@@ -234,7 +240,7 @@ MANAPPURAM
 FIVESTAR
 IREDA
 MUTHOOTFIN
-PEL
+# PEL    # no EQ data since 2025-09-22 (339d) - delisted/renamed
 HOMEFIRST
 REPCOHOME
 SPANDANA
@@ -315,7 +321,7 @@ CIEINDIA
 NAUKRI
 CARTRADE
 EASEMYTRIP
-VERTOZ
+# VERTOZ    # no EQ data since 2026-05-28 (91d) - VERIFY - may be an EQ->BE series move
 IXIGO
 KFINTECH
 POLICYBZR
@@ -328,15 +334,15 @@ TBOTEK
 MOBIKWIK
 PAYTM
 SWIGGY
-ZOMATO
+# ZOMATO    # no EQ data since 2025-04-08 (506d) - delisted/renamed
 ACCELYA
-APTECHT
+# APTECHT    # no EQ data since 2026-06-17 (71d) - VERIFY - may be an EQ->BE series move
 CYIENT
 ECLERX
 HCLTECH
 INTELLECT
 INFY
-LTIM
+# LTIM    # no EQ data since 2026-02-26 (182d) - delisted/renamed
 LTTS
 MASTEK
 MPHASIS
@@ -344,7 +350,7 @@ NEWGEN
 NIITLTD
 OFSS
 PERSISTENT
-QUICKHEAL
+# QUICKHEAL    # no EQ data since 2026-06-03 (85d) - VERIFY - may be an EQ->BE series move
 RSYSTEMS
 SAKSOFT
 SONATSOFTW
@@ -364,7 +370,7 @@ ZAGGLE
 SUBEXLTD
 KPITTECH
 RAMCOSYS
-INFIBEAM
+# INFIBEAM    # no EQ data since 2026-02-02 (206d) - delisted/renamed
 RATEGAIN
 REDINGTON
 FSL
@@ -376,7 +382,7 @@ AURIONPRO
 EMUDHRA
 PROTEAN
 BLSE
-CIGNITITEC
+# CIGNITITEC    # no EQ data since 2026-05-14 (105d) - VERIFY - may be an EQ->BE series move
 TATATECH
 EXPLEOSOL
 DATAMATICS
@@ -414,10 +420,10 @@ HPL
 SERVOTECH
 BAJEL
 SALZERELEC
-GEPIL
+# GEPIL    # no EQ data since 2025-08-26 (366d) - delisted/renamed
 MARINE
 JPPOWER
-GVT&D
+# GVT&D    # duplicate entry removed 2026-08-28
 POWERINDIA
 CGPOWER
 PRECWIRE
@@ -428,7 +434,7 @@ HONDAPOWER
 TDPOWERSYS
 DYCL
 GENUSPOWER
-STLTECH
+# STLTECH    # no EQ data since 2026-05-13 (106d) - VERIFY - may be an EQ->BE series move
 JSWENERGY
 PTC
 GMRP&UI
@@ -464,7 +470,7 @@ GODREJPROP
 ANANTRAJ
 ABREL
 ARVSMART
-GANESHHOUC
+# GANESHHOUC    # no EQ data since 2025-09-12 (349d) - delisted/renamed
 ARKADE
 DBREALTY
 SOBHA
@@ -542,7 +548,7 @@ VBL
 DALBHARAT
 KCP
 DCMSHRIRAM
-KESORAMIND
+# KESORAMIND    # no EQ data since 2026-05-15 (104d) - VERIFY - may be an EQ->BE series move
 NIACL
 NAM-INDIA
 SBILIFE
@@ -566,7 +572,7 @@ DOLATALGO
 GEOJITFSL
 ANGELONE
 ANANDRATHI
-ISEC
+# ISEC    # no EQ data since 2025-03-21 (524d) - delisted/renamed
 JMFINANCIL
 MOTILALOFS
 CAMS
@@ -581,7 +587,7 @@ MONARCH
 EDELWEISS
 CHOICEIN
 IIFLCAPS
-AKZOINDIA
+# AKZOINDIA    # no EQ data since 2026-04-13 (136d) - VERIFY - may be an EQ->BE series move
 ASIANPAINT
 BERGEPAINT
 INDIGOPNTS
@@ -624,7 +630,7 @@ GSFC
 MBAPL
 IPL
 SPIC
-MANGCHEFER
+# MANGCHEFER    # no EQ data since 2025-10-30 (301d) - delisted/renamed
 ABFRL
 ARVIND
 ARVINDFASN
@@ -643,7 +649,7 @@ GRWRHITECH
 KPRMILL
 GARFIBRES
 FILATEX
-RSWM
+# RSWM    # no EQ data since 2026-06-17 (71d) - VERIFY - may be an EQ->BE series move
 RAYMOND
 NITINSPIN
 SIYSIL
@@ -668,12 +674,12 @@ FORCEMOT
 HEROMOTOCO
 MAHSCOOTER
 MARUTI
-TATAMOTORS
+# TATAMOTORS    # no EQ data since 2025-10-23 (308d) - delisted/renamed
 TVSMOTOR
 M&M
 HYUNDAI
 OLAELEC
-SMLISUZU
+# SMLISUZU    # no EQ data since 2025-11-07 (293d) - delisted/renamed
 ACE
 BHARATFORG
 EICHERMOT
@@ -805,7 +811,7 @@ THOMASCOOK
 MHRIL
 IMAGICAA
 WONDERLA
-ADORWELD
+# ADORWELD    # no EQ data since 2025-04-09 (505d) - delisted/renamed
 ESABINDIA
 GRAPHITE
 HEG
@@ -817,7 +823,7 @@ MOLDTKPAC
 POLYPLEX
 UFLEX
 BLUESTARCO
-JCHAC
+# JCHAC    # no EQ data since 2025-12-23 (247d) - delisted/renamed
 SYMPHONY
 AMBER
 KRN
@@ -829,9 +835,9 @@ GRAVITA
 PCBL
 RAIN
 EVERESTIND
-HIL
+# HIL    # no EQ data since 2025-04-08 (506d) - delisted/renamed
 INDIANHUME
-ITDCEM
+# ITDCEM    # no EQ data since 2025-09-16 (345d) - delisted/renamed
 MAHSEAMLES
 VISAKAIND
 WELCORP
@@ -917,12 +923,12 @@ CARYSIL
 MAYURUNIQ
 ETHOSLTD
 INDGN
-GENSOL
+# GENSOL    # no EQ data since 2025-03-18 (527d) - delisted/renamed
 STYLAMIND
 KDDL
 SAFARI
 VIPIND
-SGLTL
+# SGLTL    # no EQ data since 2026-01-16 (223d) - delisted/renamed
 HLEGLAS
 ASAHIINDIA
 BOROLTD
@@ -984,7 +990,7 @@ GOLDIAM
 DPABHUSHAN
 PNGJL
 MOTISONS
-MTARTECH
+# MTARTECH    # no EQ data since 2026-06-24 (64d) - VERIFY - may be an EQ->BE series move
 PARAS
 HAL
 BDL

@@ -27,6 +27,7 @@
   },
   "fno_grey_color": "D3D3D3",
   "stale_days_threshold": 4,
+  "delisted_days_threshold": 60,
   "shortlist": {
     "min_adv_crore": 5,
     "stages": ["Stage 2", "Stage 2 (Pullback)"],
