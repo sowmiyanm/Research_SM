@@ -199,7 +199,7 @@ class ExcelReportGenerator:
         ws.cell(row=header_row, column=summary_col, value="Dlv 10d")
         ws.cell(row=header_row, column=summary_col + 1, value="Dlv 30d")
         ws.cell(row=header_row, column=summary_col + 2, value="Dlv Trend")
-        ws.cell(row=header_row, column=summary_col + 3, value="Accum (of 7)")
+        ws.cell(row=header_row, column=summary_col + 3, value="Divergence")
         ws.cell(row=header_row, column=summary_col + 4, value=f"N≥50%/{self.evaluation_days}")
         ws.cell(row=header_row, column=summary_col + 5, value=f"N≥40%/{self.evaluation_days}")
         ws.cell(row=header_row, column=summary_col + 6, value=f"N≥50%+HV/{self.evaluation_days}")
@@ -207,7 +207,7 @@ class ExcelReportGenerator:
         ws.cell(row=header_row, column=summary_col + 8, value="N≥50%+HV/15d")
         ws.cell(row=header_row, column=summary_col + 9, value="N≥50%+HV/20d")
 
-        ws.cell(row=header_row, column=summary_col + 10, value="Exit (of 10)")
+        ws.cell(row=header_row, column=summary_col + 10, value="Stage")
         ws.cell(row=header_row, column=summary_col + 11, value="Cross↓ WMA")
         ws.cell(row=header_row, column=summary_col + 12, value="Distrib Alert")
         ws.cell(row=header_row, column=summary_col + 13, value="Stage 3 Alert")
@@ -517,12 +517,19 @@ class ExcelReportGenerator:
         deliv_avg_10d = _get('deliv_avg_10d', None)
         deliv_avg_30d = _get('deliv_avg_30d', None)
         deliv_trend = _get('deliv_trend')
-        accum_score = _get('accum_score', 0)
 
         _pct(summary_col, deliv_avg_10d)
         _pct(summary_col + 1, deliv_avg_30d)
         ws.cell(row=row, column=summary_col + 2, value=deliv_trend)
-        _int_cell(summary_col + 3, accum_score)
+        # col 34 (was Accum Score): show divergence — the price/delivery
+        # divergence signal already computed at column 28; repeating it here
+        # next to the delivery columns it relates to makes for easier scanning
+        divergence_val = _get('divergence')
+        div_cell = ws.cell(row=row, column=summary_col + 3, value=divergence_val)
+        if divergence_val == 'Bullish':
+            div_cell.fill = buy_fill; div_cell.font = _FONT_BOLD_WHITE
+        elif divergence_val == 'Bearish':
+            div_cell.fill = sell_fill; div_cell.font = _FONT_BOLD_WHITE
 
         if not hasattr(self, '_calculator'):
             from calculations import StockCalculator
@@ -537,9 +544,15 @@ class ExcelReportGenerator:
         _int_cell(summary_col + 9, summary['count_excl_blue_highvol_20d'])
 
         # ── Sell signals ──
-        exit_score = _get('exit_score', 0)
-        _int_cell(summary_col + 10, exit_score)
-        exit_score_cell = ws.cell(row=row, column=summary_col + 10)
+        # col 41 (was Exit Score): repeat the Stage, so the sell-signal block
+        # starts with the context (Stage 3/4 = distribution zone, Stage 1/2 =
+        # less concerning for any alerts in this block)
+        stage_val = _get('stage')
+        stage_cell = ws.cell(row=row, column=summary_col + 10, value=stage_val)
+        if stage_val in ['Stage 3', 'Stage 4']:
+            stage_cell.fill = sell_fill; stage_cell.font = _FONT_BOLD_WHITE
+        elif stage_val == 'Stage 1':
+            stage_cell.fill = _FILL_GREEN_STAGE1
 
         for ci, key in [(summary_col + 11, 'cross_below_alert'),
                          (summary_col + 12, 'distribution_alert'),
@@ -557,11 +570,6 @@ class ExcelReportGenerator:
         price_vs_10ma = _get('price_vs_10ma')
         deliv_momentum = _get('deliv_momentum')
         vol_spike_down = _get('vol_spike_down', 'No')
-
-        if exit_score >= 6:
-            exit_score_cell.fill = sell_fill; exit_score_cell.font = _FONT_BOLD_WHITE
-        elif exit_score >= 3:
-            exit_score_cell.fill = warn_fill
 
         if cross_below_alert == 'SELL (Vol)':
             ws.cell(row=row, column=summary_col + 11).fill = sell_fill
@@ -649,8 +657,6 @@ class ExcelReportGenerator:
         stage_val = _get('stage')
         if stage_val in ['Stage 2', 'Stage 2 (Pullback)']:
             why_parts.append(stage_val)
-        if pd.notna(accum_score) and accum_score >= 4:
-            why_parts.append(f"Acc{int(accum_score)}")
         if pd.notna(rs_ratio) and rs_ratio > 5:
             why_parts.append(f"RS{rs_ratio:+.0f}%")
         if pd.notna(deliv_avg_30d) and deliv_avg_30d >= 50:
@@ -715,8 +721,8 @@ class ExcelReportGenerator:
                 divergence_cell.fill = grey
             if squeeze not in ['Coiling', 'Tight']:
                 squeeze_cell.fill = grey
-            if exit_score < 3:
-                exit_score_cell.fill = grey
+            if stage_val not in ['Stage 3', 'Stage 4', 'Stage 1']:
+                stage_cell.fill = grey
             if cross_below_alert not in ['SELL', 'SELL (Vol)']:
                 ws.cell(row=row, column=summary_col + 11).fill = grey
             if distribution_alert != 'Yes':
@@ -861,7 +867,6 @@ class ExcelReportGenerator:
         min_adv = sl.get('min_adv_crore', 5)
         stages_ok = sl.get('stages', ['Stage 2', 'Stage 2 (Pullback)'])
         min_rs = sl.get('min_rs', 0)
-        max_exit = sl.get('max_exit_score', 2)
         min_deliv = sl.get('min_deliv_30d', 45)
         exclude_ca = sl.get('exclude_corp_action', True)
         top_n = sl.get('top_n', 50)
@@ -869,7 +874,7 @@ class ExcelReportGenerator:
         # Detect a universe-wide RS outage (NIFTY fetch AND cache fallback both
         # failed that run, or ran before any NIFTY cache existed) up front, so
         # the analyst sees it on the sheet instead of it silently degrading
-        # the ranking to accum_score-only with no visible sign anything is wrong.
+        # the ranking to delivery-only with no visible sign anything is wrong.
         non_empty = [df for df in ticker_data_dict.values() if not df.empty]
         rs_covered = sum(1 for df in non_empty if pd.notna(df.iloc[-1].get('rs_ratio')))
         rs_outage = bool(non_empty) and rs_covered == 0
@@ -882,9 +887,7 @@ class ExcelReportGenerator:
 
             stage = latest.get('stage', 'N/A')
             rs_ratio = latest.get('rs_ratio')
-            exit_score = latest.get('exit_score', 99)
             deliv_30d = latest.get('deliv_avg_30d')
-            accum_score = latest.get('accum_score', 0)
             has_ca = ('corp_action_suspected' in df.columns and
                       (df['corp_action_suspected'] == 'Yes').any())
 
@@ -905,13 +908,9 @@ class ExcelReportGenerator:
             else:
                 continue
 
-            # These three filters FAIL CLOSED: a missing value is treated as
+            # These two filters FAIL CLOSED: a missing value is treated as
             # "does not qualify", not "passes". The previous
-            # `pd.notna(x) and x < threshold` form let NaN through, so e.g. if
-            # the NIFTY/NIFTYBEES fetch failed, rs_ratio was NaN for the whole
-            # universe and the relative-strength requirement silently became a
-            # no-op while the sheet title still advertised it. Measured: the
-            # shortlist grew from 26 to 43 names with every RS cell blank.
+            # `pd.notna(x) and x < threshold` form let NaN through.
             # Two distinct cases, handled differently:
             #  - rs_outage (NO stock in the universe has RS): the filter cannot
             #    be applied at all. Bypass it rather than returning an empty
@@ -923,8 +922,6 @@ class ExcelReportGenerator:
             if not rs_outage:
                 if pd.isna(rs_ratio) or rs_ratio < min_rs:
                     continue
-            if pd.isna(exit_score) or exit_score > max_exit:
-                continue
             if pd.isna(deliv_30d) or deliv_30d < min_deliv:
                 continue
 
@@ -940,10 +937,14 @@ class ExcelReportGenerator:
             profit_growth = latest.get('profit_growth_yoy')
             wma_slope = latest.get('wma_slope')
             squeeze = latest.get('squeeze')
+            divergence = latest.get('divergence')
             cross_above = False
+            cross_confirmed = False
             if 'cross_above' in df.columns:
                 cw = df[df['week'] == df.iloc[-1].get('week')]
                 cross_above = cw['cross_above'].any() if len(cw) > 0 else False
+                if cross_above and 'cross_above_confirmed' in df.columns:
+                    cross_confirmed = cw['cross_above_confirmed'].any()
             cross_below = latest.get('cross_below_alert', '-')
             triple_confirm = latest.get('triple_confirm', 'No')
             pivot_price = latest.get('pivot_price')
@@ -958,10 +959,8 @@ class ExcelReportGenerator:
                 'stage': stage,
                 'mcap': meta.get('mcap', ''),
                 'sector': meta.get('department', ''),
-                'accum_score': accum_score,
                 'has_rs': pd.notna(rs_ratio),
                 'rs_ratio': rs_ratio if pd.notna(rs_ratio) else -999,
-                'exit_score': exit_score if pd.notna(exit_score) else 99,
                 'deliv_30d': deliv_30d if pd.notna(deliv_30d) else 0,
                 'deliv_10d': deliv_avg_10d if pd.notna(deliv_avg_10d) else 0,
                 'adv_cr': adv_cr,
@@ -972,7 +971,9 @@ class ExcelReportGenerator:
                 'roc_1m': roc_1m,
                 'wma_slope': wma_slope,
                 'squeeze': squeeze,
+                'divergence': divergence,
                 'cross_above': cross_above,
+                'cross_confirmed': cross_confirmed,
                 'cross_below': cross_below,
                 'promoter_pct': promoter_pct,
                 'promoter_change': promoter_change,
@@ -988,7 +989,7 @@ class ExcelReportGenerator:
 
         if not candidates:
             msg = (f"No stocks pass the shortlist filters "
-                   f"(stages={stages_ok}, RS>={min_rs}%, Exit<={max_exit}, "
+                   f"(stages={stages_ok}, RS>={min_rs}%, "
                    f"Dlv30>={min_deliv}%, ADV>={min_adv}cr)")
             if rs_outage:
                 msg += " — ⚠ RS vs NIFTY UNAVAILABLE THIS RUN (fetch and cache both failed)"
@@ -996,20 +997,22 @@ class ExcelReportGenerator:
             ws.column_dimensions['A'].width = 60
             return
 
-        # Rank: accum_score percentile + rs_ratio percentile
+        # Rank: blended composite of RS percentile and entry quality.
+        #
+        # RS ALONE is a poor sort key — by the time a stock has high relative
+        # strength it has usually already moved past its pivot (corr +0.79 with
+        # dist_to_pivot). RS belongs in the FILTER (min_rs: 0 keeps laggards out),
+        # and entry quality belongs in the SORT.
+        #
+        # The composite:
+        #   45% RS percentile (Weinstein's "buy market leaders" — still matters)
+        #   55% entry score (proximity to pivot + tightness of stop)
+        #   +bonus for fresh cross-above / Triple Confirm
+        #
+        # Entry score: 100 = at pivot +1.5% with a 0% stop, 0 = 15%+ extended
+        # or 20%+ stop. Names with no base at all score 0 on the entry term
+        # rather than being ranked on RS alone.
         n = len(candidates)
-        sorted_by_acc = sorted(candidates, key=lambda x: x['accum_score'])
-        for i, c in enumerate(sorted_by_acc):
-            c['rank_acc'] = (i / (n - 1)) * 100 if n > 1 else 50
-
-        # rs_ratio is ranked only among candidates that actually have RS data.
-        # Candidates without it (too young for the 52-day lookback, or RS
-        # unavailable for the whole universe that day) get a neutral 50th
-        # percentile instead of being folded into the -999 sentinel sort —
-        # otherwise a universe-wide RS outage degenerates into an arbitrary
-        # tie-order ranking (since a stable sort still spreads identical
-        # values across the full 0-100 range), and a single RS-limited stock
-        # gets unfairly capped near the bottom regardless of its real quality.
         rs_candidates = [c for c in candidates if c['has_rs']]
         sorted_by_rs = sorted(rs_candidates, key=lambda x: x['rs_ratio'])
         n_rs = len(sorted_by_rs)
@@ -1020,27 +1023,48 @@ class ExcelReportGenerator:
                 c['rank_rs'] = 50
 
         for c in candidates:
-            c['composite'] = c['rank_acc'] * 0.5 + c['rank_rs'] * 0.5
+            # Entry quality score: penalises distance from pivot and wide stops.
+            # Peak score at dist_pivot ≈ +1.5% (just through the pivot — early
+            # enough, but a clear breakout). Score decays to zero at ~14% extended
+            # or 20% stop. Names with no base get zero — they can't be ranked on
+            # entry quality because there is no entry level to measure against.
+            entry_score = 0.0
+            if pd.notna(c['dist_pivot']):
+                entry_score += max(0.0, 100.0 - abs(c['dist_pivot'] - 1.5) * 8.0)
+            if pd.notna(c['dist_stop']):
+                entry_score += max(0.0, 100.0 - c['dist_stop'] * 5.0)
+                entry_score /= 2.0  # average the two sub-scores
+            else:
+                # No stop means no base — entry_score stays 0 regardless of
+                # any partial dist_pivot contribution
+                entry_score = 0.0
+
+            c['composite'] = 0.45 * c['rank_rs'] + 0.55 * entry_score
+            if c['cross_confirmed']:
+                c['composite'] += 12
+            elif c['cross_above']:
+                c['composite'] += 8
             if c['triple_confirm'] == 'Yes':
-                c['composite'] += 5  # small bump for fresh same-day confirmation
+                c['composite'] += 5
 
         candidates.sort(key=lambda x: x['composite'], reverse=True)
         candidates = candidates[:top_n]
 
         # ── Title ──
         title = (f"Shortlist — {len(candidates)} stocks "
-                 f"(Stage 2/2P, RS≥{min_rs}%, Exit≤{max_exit}, Dlv30≥{min_deliv}%, ADV≥{min_adv}cr)")
+                 f"(Stage 2/2P, RS≥{min_rs}%, Dlv30≥{min_deliv}%, ADV≥{min_adv}cr)")
         if rs_outage:
-            title += "  —  ⚠ RS vs NIFTY UNAVAILABLE THIS RUN — ranked on Accum Score only"
+            title += "  —  ⚠ RS vs NIFTY UNAVAILABLE THIS RUN"
         ws.cell(row=1, column=1, value=title)
         ws.cell(row=1, column=1).font = _FONT_RED_BOLD_SIZE14 if rs_outage else _FONT_BOLD_SIZE14
         ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=23)
 
         # ── Headers ──
-        headers = ['Rank', 'STOCK', 'MCAP', 'Sector', 'Stage', 'Accum',
-                   'RS %', '52WH %', 'Wks▲', 'Dlv30', 'Dlv10', 'ADV cr',
-                   'Exit', 'Vol Ratio', 'WMA Slope', 'Squeeze', 'Promoter %',
-                   'Pivot', '→Pivot %', 'Stop', '→Stop %', 'Base Wks', 'Why']
+        headers = ['Rank', 'STOCK', 'MCAP', 'Sector', 'Stage', 'RS %',
+                   '52WH %', 'Wks▲', 'Dlv30', 'Dlv10', 'ADV cr',
+                   'Cross', 'Vol Ratio', 'WMA Slope', 'Squeeze', 'Diverge',
+                   'Promoter %', 'Pivot', '→Pivot %', 'Stop', '→Stop %',
+                   'Base Wks', 'Why']
         hdr_row = 2
         for idx, h in enumerate(headers):
             cell = ws.cell(row=hdr_row, column=idx + 1, value=h)
@@ -1058,26 +1082,42 @@ class ExcelReportGenerator:
             ws.cell(row=r, column=3, value=c['mcap']).alignment = Alignment(horizontal='center')
             ws.cell(row=r, column=4, value=c['sector']).alignment = Alignment(horizontal='center')
             ws.cell(row=r, column=5, value=c['stage']).alignment = Alignment(horizontal='center')
-            _si = ws.cell(row=r, column=6, value=int(c['accum_score']))
-            _si.number_format = _NUMBER_FMT_INT; _si.alignment = Alignment(horizontal='center')
-            _rs = ws.cell(row=r, column=7, value=round(c['rs_ratio'] / 100, 4) if c['rs_ratio'] != -999 else None)
+            _rs = ws.cell(row=r, column=6, value=round(c['rs_ratio'] / 100, 4) if c['rs_ratio'] != -999 else None)
             _rs.number_format = _NUMBER_FMT_PCT; _rs.alignment = Alignment(horizontal='center')
-            _52 = ws.cell(row=r, column=8, value=round(c['high_52w_pct'] / 100, 4) if pd.notna(c['high_52w_pct']) else None)
+            _52 = ws.cell(row=r, column=7, value=round(c['high_52w_pct'] / 100, 4) if pd.notna(c['high_52w_pct']) else None)
             _52.number_format = _NUMBER_FMT_PCT; _52.alignment = Alignment(horizontal='center')
-            _wa = ws.cell(row=r, column=9, value=int(c['weeks_above']) if pd.notna(c['weeks_above']) else 0)
+            _wa = ws.cell(row=r, column=8, value=int(c['weeks_above']) if pd.notna(c['weeks_above']) else 0)
             _wa.number_format = _NUMBER_FMT_INT; _wa.alignment = Alignment(horizontal='center')
-            _d30 = ws.cell(row=r, column=10, value=round(c['deliv_30d'] / 100, 4) if c['deliv_30d'] else None)
+            _d30 = ws.cell(row=r, column=9, value=round(c['deliv_30d'] / 100, 4) if c['deliv_30d'] else None)
             _d30.number_format = _NUMBER_FMT_PCT; _d30.alignment = Alignment(horizontal='center')
-            _d10 = ws.cell(row=r, column=11, value=round(c['deliv_10d'] / 100, 4) if c['deliv_10d'] else None)
+            _d10 = ws.cell(row=r, column=10, value=round(c['deliv_10d'] / 100, 4) if c['deliv_10d'] else None)
             _d10.number_format = _NUMBER_FMT_PCT; _d10.alignment = Alignment(horizontal='center')
-            _adv = ws.cell(row=r, column=12, value=round(c['adv_cr'], 1))
+            _adv = ws.cell(row=r, column=11, value=round(c['adv_cr'], 1))
             _adv.number_format = _NUMBER_FMT_1DP; _adv.alignment = Alignment(horizontal='center')
-            _ex = ws.cell(row=r, column=13, value=int(c['exit_score']))
-            _ex.number_format = _NUMBER_FMT_INT; _ex.alignment = Alignment(horizontal='center')
-            _vr = ws.cell(row=r, column=14, value=round(c['vol_ratio'], 1) if pd.notna(c['vol_ratio']) else None)
+
+            # Cross column: green "✓Vol" for confirmed, yellow "✓" for unconfirmed
+            cross_cell = ws.cell(row=r, column=12)
+            if c['cross_confirmed']:
+                cross_cell.value = '✓Vol'; cross_cell.fill = _FILL_GREEN_BUY
+                cross_cell.font = _FONT_BOLD_WHITE
+            elif c['cross_above']:
+                cross_cell.value = '✓'; cross_cell.fill = _FILL_YELLOW_WARN
+                cross_cell.font = _FONT_BOLD
+            cross_cell.alignment = Alignment(horizontal='center')
+
+            _vr = ws.cell(row=r, column=13, value=round(c['vol_ratio'], 1) if pd.notna(c['vol_ratio']) else None)
             _vr.number_format = _NUMBER_FMT_1DP; _vr.alignment = Alignment(horizontal='center')
-            ws.cell(row=r, column=15, value=c['wma_slope']).alignment = Alignment(horizontal='center')
-            ws.cell(row=r, column=16, value=c['squeeze']).alignment = Alignment(horizontal='center')
+            ws.cell(row=r, column=14, value=c['wma_slope']).alignment = Alignment(horizontal='center')
+            ws.cell(row=r, column=15, value=c['squeeze']).alignment = Alignment(horizontal='center')
+
+            # Divergence
+            div_cell = ws.cell(row=r, column=16, value=c.get('divergence', 'N/A'))
+            div_cell.alignment = Alignment(horizontal='center')
+            if c.get('divergence') == 'Bullish':
+                div_cell.fill = _FILL_GREEN_BUY; div_cell.font = _FONT_BOLD_WHITE
+            elif c.get('divergence') == 'Bearish':
+                div_cell.fill = _FILL_RED_SELL; div_cell.font = _FONT_BOLD_WHITE
+
             _pr = ws.cell(row=r, column=17, value=round(c['promoter_pct'] / 100, 4) if pd.notna(c['promoter_pct']) else None)
             _pr.number_format = _NUMBER_FMT_PCT2; _pr.alignment = Alignment(horizontal='center')
 
@@ -1105,16 +1145,18 @@ class ExcelReportGenerator:
 
             # Why
             why = []
-            if c['cross_above']:
+            if c['cross_confirmed']:
+                why.append('Cross↑Vol')
+            elif c['cross_above']:
                 why.append('Cross↑')
-            if c['accum_score'] >= 4:
-                why.append(f"Acc{c['accum_score']}")
-            if pd.notna(c['rs_ratio']) and c['rs_ratio'] > 10:
+            if pd.notna(c['rs_ratio']) and c['rs_ratio'] > 5:
                 why.append(f"RS{c['rs_ratio']:.0f}%")
             if c['deliv_30d'] >= 55:
                 why.append(f"Dlv{c['deliv_30d']:.0f}%")
             if c['squeeze'] in ['Coiling', 'Tight']:
                 why.append(c['squeeze'])
+            if c['divergence'] == 'Bullish':
+                why.append('BullDiv')
             if c['triple_confirm'] == 'Yes':
                 why.append('3xConfirm')
             if pd.notna(c['dist_pivot']) and -2 <= c['dist_pivot'] <= 5:
@@ -1126,12 +1168,6 @@ class ExcelReportGenerator:
             if c['has_ca']:
                 why.append('⚠CA')
             ws.cell(row=r, column=23, value='; '.join(why))
-
-            # Colour exit score
-            if c['exit_score'] >= 6:
-                _ex.fill = _FILL_RED_SELL; _ex.font = _FONT_BOLD_WHITE
-            elif c['exit_score'] >= 3:
-                _ex.fill = _FILL_YELLOW_WARN
 
             # FNO grey. NOTE: must use c['ticker'] — `ticker` here would be the
             # leftover loop variable from the candidate-collection loop above,

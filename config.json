@@ -31,7 +31,6 @@
     "min_adv_crore": 5,
     "stages": ["Stage 2", "Stage 2 (Pullback)"],
     "min_rs": 0,
-    "max_exit_score": 2,
     "min_deliv_30d": 45,
     "exclude_corp_action": true,
     "top_n": 50

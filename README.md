@@ -155,7 +155,7 @@ These columns quantify **how consistently institutions are accumulating**.
 | **Deliv Avg(10d)** | Recent 10-day average delivery % | Shows **current** institutional interest. Compare to 30d avg: if 10d > 30d, interest is accelerating. |
 | **Deliv Avg(30d)** | Sustained 30-day average delivery % | Shows **sustained** interest. >= 55% = strong institutional presence. < 40% = mostly speculative activity. |
 | **Deliv Trend** | Increasing / Stable / Decreasing | Direction of delivery momentum. Increasing in Stage 1/2 = bullish. Decreasing in Stage 2/3 = distribution warning. |
-| **Accum Score** | Multi-factor accumulation score (0-7) | **One-number quality rating.** 5-7 = high conviction buy candidate. 4 = solid. 3 = moderate. <= 2 = not in accumulation. Sort descending to find best candidates. |
+| **Accum Score** | Retired — see Shortlist Ranking above | The one-number composite has been replaced by side-by-side raw data plus RS-based ranking with cross/TC bonuses. |
 | **Count (>=50%)/45** | Days with delivery >= 50% in last 45 days | Raw consistency measure. Higher = more sustained accumulation. |
 | **Count (>=40%)/45** | Days with delivery >= 40% in last 45 days | Broader consistency including moderate interest. |
 | **Count (>=50% + HighVol)/45** | Days with delivery >= 50% AND volume > MA | **The strongest confirmation.** High delivery alone could be low-volume noise. This requires BOTH. >= 15/45 = strong accumulation. |
@@ -169,7 +169,7 @@ These columns tell you **when to sell or avoid**. Each maps to a specific risk.
 
 | Indicator | What It Shows | Analyst Use |
 |-----------|---------------|-------------|
-| **Exit Score** | Combined sell signal strength (0-10) | **Overall danger level.** >= 6 (red) = strong sell, act immediately. 3-5 (yellow) = warning, tighten stops. 0-2 = healthy. |
+| **Exit Score** | Retired — see individual exit signals below | Each exit signal (Cross Below, Distribution Alert, Stage 3 Alert, etc.) is shown individually so you can see which risk is actually firing. |
 | **Cross Below WMA** | `SELL (Vol)` or `SELL` or `-` | **Primary Weinstein sell signal.** `SELL (Vol)` (red) = volume-confirmed break below 30WMA. This is the mechanical exit — do not argue with it. `SELL` (yellow) = unconfirmed but still a warning. |
 | **Distribution Alert** | Yes/No | (A) Near 52W high + declining delivery = institutions distributing shares to retail. (B) Stage 3/4 + declining delivery + down-day volume spikes = sustained post-breakdown distribution. Both are classic top signals. |
 | **Stage 3 Alert** | Exit Signal / Stage 3 / - | "Exit Signal" (red) = stock just transitioned from Stage 2 to Stage 3. This is the earliest stage-based exit trigger. |
@@ -194,34 +194,28 @@ These columns help find **turnaround candidates** — stocks basing in Stage 1 t
 | **STOCK** | Ticker symbol | Identifier |
 | **Date columns (60 days)** | `Delivery% \| Yes/No` with color coding | **Visual pattern recognition.** Look for clusters of purple/dark green (sustained accumulation). Recent shift from white to colored = fresh interest. Mostly white = no institutional participation. |
 
-## Scoring Systems
+## Scoring Systems (removed in 2026-08)
 
-### Accumulation Score (0-7) — "Should I buy this?"
+The Accumulation Score (0-7) and Exit Score (0-10) composite scoring systems have been
+retired. Each was a weighted black box — equal-weight factors penalized pullback entries
+(a -1% monthly ROC got zero for Factor 1 even with every other signal strong), and the
+Lower High false positives on a 20-day window fed the Exit Score at full weight.
+The one-number output hid *which* factor was driving the rating.
 
-| Factor | Criteria | Why |
-|--------|----------|-----|
-| 1-Month ROC | 0% to 15% | Not falling, not parabolic — Goldilocks zone |
-| 30d Avg Delivery | >= 55% | Sustained institutional interest |
-| Delivery Trend | Increasing or Stable | Not distributing |
-| Price vs WMA | -5% to +10% | Early stage, not overextended |
-| WMA Slope | Flat or Rising | Trend support present |
-| Volume Consistency | 5+ of last 10 days > MA | Sustained participation, not one-off spike |
-| RS vs NIFTY | > 0 (outperforming) | Weinstein's rule — buy market leaders, not laggards |
+The replacement is **holistic**: the Report sheet shows all the raw data side by side.
+The Shortlist now ranks on RS vs NIFTY percentile (Weinstein's core rule — buy market
+leaders), with bonus points for fresh cross-above (+8/+12) and Triple Confirm (+5)
+signals — transparent, aligned with the method, and not hiding anything behind a score.
 
-### Exit Score (0-10) — "Should I sell this?"
+## Shortlist Ranking (current)
 
-| Factor | What triggers it |
-|--------|-----------------|
-| Stage 3 or 4 | In distribution or downtrend phase |
-| Cross below 30WMA | Primary Weinstein sell signal |
-| Distribution alert | Near 52W high + falling delivery, OR Stage 3/4 + declining delivery + volume spikes down |
-| Declining delivery momentum | Institutional money leaving |
-| Price below 10-day MA | Short-term weakness |
-| Lower high pattern | Trend structure breaking down |
-| RSI overbought in Stage 3/4 | Exhaustion at the top |
-| RS Trend weakening | Early warning of stage transition |
-| Bearish divergence | Price up but delivery falling — distribution |
-| Momentum breaking down | ROC alignment failing across timeframes |
+The Shortlist sheet ranks candidates by:
+
+1. **RS vs NIFTY percentile** (primary — 100% weight). Higher RS = higher rank.
+2. **Bonus for fresh signals**: +12 for volume-confirmed cross above 30WMA this week,
+   +8 for unconfirmed cross above, +5 for Triple Confirm firing today.
+3. **Filters**: Stage 2 or Stage 2 (Pullback), RS ≥ min_rs, Dlv30 ≥ min_deliv,
+   ADV ≥ min_adv (median), corp-action stocks excluded.
 
 ## Analyst Playbook
 
@@ -229,19 +223,19 @@ These columns help find **turnaround candidates** — stocks basing in Stage 1 t
 
 ```
 Step 1: Filter Stage = 1 or 2                              → eliminates ~50%
-Step 2: Filter Accum Score >= 4                             → narrows to quality setups
-Step 3: Look for Cross Above = checkmark + Vol Confirmed    → timing the entry
-Step 4: Check RS vs NIFTY > 0 (outperforming market)        → genuine strength
-Step 5: Check Momentum = "All Up" or "Reversing Up"         → multi-timeframe confirmation
-Step 6: Check Divergence != "Bearish"                       → no hidden distribution
-Step 7: Verify Wks Above WMA < 10                           → early enough, good risk/reward
-Step 8: Check Price vs 200DMA = "Above"                     → institutional eligibility
-Step 9: Check Profit Growth YoY > 0%                        → earnings support
-Step 10: Check PE Ratio < Sector PE                         → not overvalued vs peers
-Step 11: Scan daily columns for recent purple/dark green     → visual confirmation
+Step 2: Check RS vs NIFTY > 0 (outperforming market)        → genuine strength
+Step 3: Look for Cross Above = ✓Vol (volume-confirmed)      → timing the entry
+Step 4: Check Momentum = "All Up" or "Reversing Up"         → multi-timeframe confirmation
+Step 5: Check Divergence = "Bullish"                        → delivery up while price flat
+Step 6: Verify Wks Above WMA < 10                           → early enough, good risk/reward
+Step 7: Check Price vs 200DMA = Above                       → institutional eligibility
+Step 8: Check Profit Growth YoY > 0%                        → earnings support
+Step 9: Check PE Ratio < Sector PE                          → not overvalued vs peers
+Step 10: Scan daily columns for recent purple/dark green     → visual confirmation
+Step 11: Check Dist to Pivot ≤ 5%                           → near entry zone
 ```
 
-**Highest conviction setup**: Stage 2 + Accum >= 5 + Volume-confirmed cross + RS outperforming + Momentum "All Up" + Bullish divergence + Above 200 DMA + Profit growth > 20% + PE below sector PE.
+**Highest conviction setup**: Stage 2 + Volume-confirmed cross + RS outperforming + Momentum "All Up" + Bullish divergence + Above 200 DMA + Profit growth > 20% + PE below sector PE + At/near pivot.
 
 **Value breakout**: Stage 2 + PE significantly below Sector PE + Profit Growth > 20% + Promoter > 50% + Above 200 DMA. This is a fundamentally sound breakout — earnings growing, insiders holding, price cheap vs peers.
 
@@ -317,8 +311,7 @@ Delivery Data       PE Ratio                  Promoter Holding %       for Relat
   |  Multi-TF Momentum (ROC)      |
   |  Price-Delivery Divergence    |
   |  Consolidation Squeeze        |
-  |  Accumulation Score           |
-  |  Exit Score + Alerts          |
+  |  Entry/Exit Level Signals     |
   +-------------------------------+
              |
              v
@@ -350,7 +343,6 @@ Delivery Data       PE Ratio                  Promoter Holding %       for Relat
     "min_adv_crore": 5,
     "stages": ["Stage 2", "Stage 2 (Pullback)"],
     "min_rs": 0,
-    "max_exit_score": 2,
     "min_deliv_30d": 45,
     "exclude_corp_action": true,
     "top_n": 50

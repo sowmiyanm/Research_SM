@@ -139,11 +139,15 @@ class DataCache:
             df_excel = df.copy()
             df_excel['date'] = pd.to_datetime(df_excel['date']).dt.strftime('%Y-%m-%d')
 
-            # Calculate delivery percentage for Excel
-            df_excel['delivery_pct'] = df_excel.apply(
-                lambda row: round((row['delivery_quantity'] / row['traded_quantity']) * 100, 2)
-                if row['traded_quantity'] > 0 else np.nan, axis=1
-            )
+            # Calculate delivery percentage for Excel (only when volume columns exist —
+            # index data like NIFTY_50 has only date/close and would otherwise kill
+            # the Excel fallback with a KeyError, leaving only the pickle)
+            has_volume = 'traded_quantity' in df_excel.columns and 'delivery_quantity' in df_excel.columns
+            if has_volume:
+                df_excel['delivery_pct'] = df_excel.apply(
+                    lambda row: round((row['delivery_quantity'] / row['traded_quantity']) * 100, 2)
+                    if row['traded_quantity'] > 0 else np.nan, axis=1
+                )
 
             # Reorder columns for better readability.
             # 'high'/'low' MUST be included when present: the Excel file is the
@@ -156,7 +160,23 @@ class DataCache:
             cols = [c for c in cols if c in df_excel.columns]
             df_excel = df_excel[cols]
 
-            df_excel.to_excel(excel_path, index=False, sheet_name=ticker)
+            # Write ATOMICALLY, exactly like the pickle above. A direct
+            # to_excel() leaves a truncated, unreadable .xlsx if the process is
+            # interrupted mid-write — which has already happened once here
+            # (GRAVITA_historical.xlsx, 24KB and not a valid zip archive, from a
+            # run killed partway). Because load_ticker_data tries the pickle
+            # first, a corrupt Excel backup is silent until the day the pickle
+            # is lost and the fallback is needed.
+            fd, tmp_xlsx = tempfile.mkstemp(dir=self.excel_cache_dir,
+                                            prefix=f".{ticker}.", suffix=".xlsx.tmp")
+            os.close(fd)
+            try:
+                df_excel.to_excel(tmp_xlsx, index=False, sheet_name=ticker[:31])
+                os.replace(tmp_xlsx, excel_path)
+            except Exception:
+                if os.path.exists(tmp_xlsx):
+                    os.remove(tmp_xlsx)
+                raise
             logger.info(f"Saved {len(df)} records to Excel cache for {ticker}")
         except Exception as e:
             logger.warning(f"Error saving Excel cache for {ticker}: {e}")

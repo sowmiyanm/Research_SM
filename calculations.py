@@ -95,6 +95,19 @@ class StockCalculator:
         df = df.copy()
         df['date'] = pd.to_datetime(df['date'])
 
+        # IDEMPOTENCY GUARD: drop any columns this method is about to produce.
+        # Without this, being handed a frame that has already been through here
+        # makes the two merges below emit _x/_y suffixed columns, and the next
+        # read of df['cross_above'] dies with a bare KeyError. Not reachable in
+        # the current pipeline (only raw frames are cached) but it is a trap for
+        # anyone who later caches processed output or re-runs the calculator
+        # over its own result.
+        _produced = ['weekly_wma30', 'cross_above', 'cross_below', 'weeks_above_wma',
+                     'weeks_below_wma', 'wma_slope', 'week_avg_vol_ratio',
+                     'cross_above_confirmed', 'cross_below_confirmed',
+                     'week', 'week_end_date']
+        df = df.drop(columns=[c for c in _produced if c in df.columns], errors='ignore')
+
         # NSE trading weeks always run Mon-Fri, so grouping by "week ending Friday"
         # already gives the correct weekly close regardless of any configured
         # week-start day - there's no other trading day a week could start on.
@@ -938,6 +951,10 @@ class StockCalculator:
                 df.loc[i, 'distribution_alert'] = 'Yes'
 
         # 5. Trend Break Detection (Lower Highs)
+        # 3% threshold over a 20+20 day window is ~5% over 10 days — noisy
+        # intra-Stage-2 consolidation routinely triggers this and the now-removed
+        # Exit Score counted it as a full factor. 5% reduces the false-positive
+        # rate while still catching genuine lower-high breakouts.
         df['trend_break'] = 'Neutral'
         for i in range(20, len(df)):
             # Get recent highs (last 20 days)
@@ -952,7 +969,7 @@ class StockCalculator:
                 if pd.notna(current_high) and pd.notna(previous_high):
                     if current_high > previous_high * 1.02:  # 2% threshold
                         df.loc[i, 'trend_break'] = 'Higher High'
-                    elif current_high < previous_high * 0.98:
+                    elif current_high < previous_high * 0.95:  # 5% threshold (was 2%)
                         df.loc[i, 'trend_break'] = 'Lower High'
 
         # 6. Stage 3 Alert (Entered distribution phase)
@@ -997,69 +1014,21 @@ class StockCalculator:
 
     def calculate_exit_score(self, df):
         """
-        Calculate exit score (0-10 based on sell signals)
-        Higher score = Stronger sell signal
+        REMOVED — Exit Score (0-10) has been retired.
+        The composite score was a weighted black box with the same problems
+        as the Accumulation Score: equal weighting across factors, a -0.95%
+        Lower High on a 20-day window counted the same as a Stage 3 transition,
+        and the single number hid which risk was actually firing.
 
-        Args:
-            df: DataFrame with exit signals
+        The replacement is the individual exit-signal columns already rendered
+        on the Report sheet — Cross Below WMA, Distribution Alert, Stage 3
+        Alert, Trend Break, Deliv Momentum, Vol Spike Down — read together
+        rather than collapsed into one opaque number.
 
-        Returns:
-            DataFrame with exit_score added
+        Kept as a no-op stub so callers don't break.
         """
         df = df.copy()
         df['exit_score'] = 0
-
-        for i in range(len(df)):
-            score = 0
-
-            # Factor 1: Stage 3 or 4 (distribution/downtrend)
-            stage = df.iloc[i].get('stage', 'N/A')
-            if stage in ['Stage 3', 'Stage 4']:
-                score += 1
-
-            # Factor 2: Distribution Alert
-            if df.iloc[i].get('distribution_alert', 'No') == 'Yes':
-                score += 1
-
-            # Factor 3: Delivery Momentum Declining
-            if df.iloc[i].get('deliv_momentum', 'N/A') == 'Declining':
-                score += 1
-
-            # Factor 4: Price below 10MA
-            if df.iloc[i].get('price_vs_10ma', 'N/A') == 'Below':
-                score += 1
-
-            # Factor 5: Lower High (trend breaking)
-            if df.iloc[i].get('trend_break', 'Neutral') == 'Lower High':
-                score += 1
-
-            # Factor 6: RSI Overbought (only bearish in Stage 3/4, not during Stage 2 uptrends)
-            rsi_signal = df.iloc[i].get('rsi_signal', 'N/A')
-            if rsi_signal == 'Overbought' and stage in ['Stage 3', 'Stage 4']:
-                score += 1
-
-            # Factor 7: Cross below 30WMA (primary Weinstein sell signal)
-            cross_below_alert = df.iloc[i].get('cross_below_alert', '-')
-            if cross_below_alert in ['SELL', 'SELL (Vol)']:
-                score += 1
-
-            # Factor 8: RS Trend weakening - the README documents this as an
-            # early-warning sign that precedes a stage transition, but it never
-            # fed the composite score before, so the mechanical exit score was
-            # always lagging behind the documented "early warning" checklist.
-            if df.iloc[i].get('rs_trend', 'N/A') == 'Weakening':
-                score += 1
-
-            # Factor 9: Bearish price/delivery divergence (price up, delivery falling)
-            if df.iloc[i].get('divergence', 'N/A') == 'Bearish':
-                score += 1
-
-            # Factor 10: Momentum breaking down across timeframes
-            if df.iloc[i].get('momentum_align', 'N/A') == 'Breaking Down':
-                score += 1
-
-            df.loc[i, 'exit_score'] = score
-
         return df
 
     def calculate_stage1_alert(self, df):
@@ -1279,70 +1248,24 @@ class StockCalculator:
 
     def calculate_accumulation_score(self, df):
         """
-        Calculate accumulation score (0-7 based on multiple factors)
+        REMOVED — Accumulation Score (0-7) has been retired.
+        The composite score was a weighted black box that could hide which
+        specific factor was driving the rating, and with equal weighting across
+        factors it penalized pullback entries (a -1% monthly ROC got zero for
+        Factor 1 even when every other signal was strong).
 
-        Args:
-            df: DataFrame with all calculated fields
+        The replacement is holistic: the Report sheet shows all the raw data
+        (delivery %, volume, RS vs NIFTY, momentum alignment, divergence,
+        squeeze, etc.) side by side so the analyst can see the full picture
+        rather than relying on a single opaque number. The Shortlist ranks on
+        RS vs NIFTY plus a bonus for fresh cross-above / Triple Confirm signals
+        — simpler, transparent, and aligned with Weinstein's core rule of
+        buying market leaders.
 
-        Returns:
-            DataFrame with accum_score added
+        Kept as a no-op stub so callers don't break.
         """
         df = df.copy()
         df['accum_score'] = 0
-
-        for i in range(len(df)):
-            score = 0
-
-            # Factor 1: Moderate positive momentum (1-month ROC between 0-15%)
-            # Goldilocks zone: gaining strength but not overheated.
-            # roc_1m is already computed by calculate_multi_timeframe_roc
-            # (which runs earlier in the pipeline); re-using it keeps the
-            # accumulation score and the ROC column in the Excel report
-            # perfectly consistent.
-            roc_1m = df.iloc[i].get('roc_1m')
-            if pd.notna(roc_1m) and 0 <= roc_1m <= 15:
-                score += 1
-
-            # Factor 2: High average delivery (30d ≥55%)
-            if pd.notna(df.iloc[i]['deliv_avg_30d']) and df.iloc[i]['deliv_avg_30d'] >= 55:
-                score += 1
-
-            # Factor 3: Delivery trend increasing or stable
-            if df.iloc[i]['deliv_trend'] in ['Increasing', 'Stable']:
-                score += 1
-
-            # Factor 4: Price at or above the 30WMA (allowing a small pullback
-            # buffer). No upper cap — a stock extended well above a rising
-            # WMA is a stronger Stage 2 trend, not a weaker one, so it must
-            # not be penalized relative to a stock that just started moving.
-            price_vs = df.iloc[i]['price_vs_wma_pct']
-            if pd.notna(price_vs) and price_vs >= -5:
-                score += 1
-
-            # Factor 5: 30WMA flat or rising (not falling)
-            if df.iloc[i]['wma_slope'] in ['Flat', 'Rising']:
-                score += 1
-
-            # Factor 6: Sustained volume confirmation (5 out of last 10 days)
-            # Check if volume > 36MA for at least 5 out of last 10 days
-            start_idx = max(0, i - 9)
-            recent_10 = df.iloc[start_idx:i + 1]
-            high_vol_days = (recent_10['is_high_vol'] == 'Yes').sum()
-            if high_vol_days >= 5:  # 50% of last 10 days had high volume
-                score += 1
-
-            # Factor 7: Relative strength vs NIFTY is positive - Weinstein's own
-            # rule that a Stage 2/accumulating stock must be a market leader, not
-            # a laggard "riding a bull market". This was previously computed
-            # elsewhere (calculate_relative_strength) but never fed into the
-            # score investors are told to sort/filter on, so an underperforming
-            # stock could still post a high accumulation score.
-            rs_ratio = df.iloc[i].get('rs_ratio')
-            if pd.notna(rs_ratio) and rs_ratio > 0:
-                score += 1
-
-            df.loc[i, 'accum_score'] = score
-
         return df
 
     def process_ticker_data(self, df, nse_52w_data=None, nifty_df=None,
@@ -1363,8 +1286,29 @@ class StockCalculator:
         if df.empty:
             return df
 
-        # Sort by date
-        df = df.sort_values('date').reset_index(drop=True)
+        # Sort by date, and DE-DUPLICATE defensively.
+        #
+        # merge_new_data() already de-duplicates, but that is a single line of
+        # defence for something quietly destructive: a duplicated trading day
+        # halves the real span of every rolling window. Measured on RELIANCE
+        # with its history fed in twice — 52w_high 1592 -> 1464 (-8%),
+        # dma_200 1398 -> 1327, and RSI 41.5 -> 31.6, which is enough to flip
+        # an Oversold classification. Nothing downstream would notice.
+        #
+        # Duplicates can still arrive from a hand-edited cache file or two
+        # concurrent runs writing the same ticker, so guard here too and say
+        # so out loud rather than silently absorbing them.
+        df = df.sort_values('date')
+        if 'date' in df.columns:
+            n_before = len(df)
+            df = df.drop_duplicates(subset=['date'], keep='last')
+            n_dropped = n_before - len(df)
+            if n_dropped:
+                logger.warning(
+                    f"Dropped {n_dropped} duplicate trading day(s) before calculation "
+                    f"({n_before} -> {len(df)} rows). Check the cache file for this ticker."
+                )
+        df = df.reset_index(drop=True)
 
         # Detect corporate actions (splits/bonuses) — must run before any
         # technical indicator that depends on historically comparable prices
