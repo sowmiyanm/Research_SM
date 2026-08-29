@@ -328,8 +328,8 @@ class NSEDataFetcher:
             required_cols = {
                 'SYMBOL': 'SYMBOL',
                 'CLOSE_PRICE': 'CLOSE_PRICE',
-                'HIGH': 'HIGH_PRICE',
-                'LOW': 'LOW_PRICE',
+                'HIGH_PRICE': 'HIGH_PRICE',
+                'LOW_PRICE': 'LOW_PRICE',
                 'TTL_TRD_QNTY': 'TTL_TRD_QNTY',
                 'DELIV_QTY': 'DELIV_QTY',
                 'DATE1': 'DATE1'
