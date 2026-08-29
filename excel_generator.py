@@ -854,6 +854,12 @@ class ExcelReportGenerator:
         for c in range(date_col_start, date_col_start + len(trading_dates)):
             ws.column_dimensions[get_column_letter(c)].width = 6
 
+        # Freeze the band-label column so the row labels stay visible when
+        # scrolling across 60 date columns (Shortlist and Report already do this).
+        # String coordinate, not a cell object — merged cells in this sheet would
+        # otherwise raise "MergedCell object is not iterable".
+        ws.freeze_panes = f"{get_column_letter(date_col_start)}1"
+
     # ═══════════════════════════════════════════════════════════════
     #  SHORTLIST sheet
     # ═══════════════════════════════════════════════════════════════
@@ -1031,6 +1037,14 @@ class ExcelReportGenerator:
         # Entry score: 100 = at pivot +1.5% with a 0% stop, 0 = 15%+ extended
         # or 20%+ stop. Names with no base at all score 0 on the entry term
         # rather than being ranked on RS alone.
+        # Ranking penalties — see the block below for why these exist.
+        rk = sl.get('ranking', {})
+        max_chase_pct = rk.get('max_chase_pct', 10.0)
+        max_risk_pct = rk.get('max_risk_pct', 18.0)
+        chase_penalty = rk.get('chase_penalty', 25.0)
+        risk_penalty = rk.get('risk_penalty', 25.0)
+        no_base_penalty = rk.get('no_base_penalty', 30.0)
+
         n = len(candidates)
         rs_candidates = [c for c in candidates if c['has_rs']]
         sorted_by_rs = sorted(rs_candidates, key=lambda x: x['rs_ratio'])
@@ -1059,6 +1073,27 @@ class ExcelReportGenerator:
                 entry_score = 0.0
 
             c['composite'] = 0.45 * c['rank_rs'] + 0.55 * entry_score
+
+            # HARD PENALTIES for un-actionable entries.
+            #
+            # The weighted blend alone was not enough. entry_score already
+            # collapses to 0 for a chase-territory name, but 0.45 * rank_rs
+            # still hands a high-RS stock up to 45 points for relative strength
+            # alone — which is how ENTERO reached rank 8 while sitting +29.5%
+            # past its pivot with a 29.5% stop, the worst reward-to-risk on the
+            # sheet. RS measures "has it moved", not "can I buy it here".
+            #
+            # These penalties are explicit and configurable rather than folded
+            # into the curve, so it stays obvious WHY a name was demoted.
+            if pd.notna(c['dist_pivot']) and c['dist_pivot'] > max_chase_pct:
+                c['composite'] -= chase_penalty
+            if pd.notna(c['dist_stop']) and c['dist_stop'] > max_risk_pct:
+                c['composite'] -= risk_penalty
+            if pd.isna(c['dist_stop']):
+                # No identifiable base: there is no entry or exit level, so it
+                # cannot be actioned no matter how strong the RS.
+                c['composite'] -= no_base_penalty
+
             if c['cross_confirmed']:
                 c['composite'] += 12
             elif c['cross_above']:
@@ -1067,11 +1102,18 @@ class ExcelReportGenerator:
                 c['composite'] += 5
 
         candidates.sort(key=lambda x: x['composite'], reverse=True)
+        n_passed = len(candidates)
         candidates = candidates[:top_n]
 
         # ── Title ──
+        # Say so when the cap is binding. On the 28-Aug run 129 stocks passed
+        # every filter but only 50 were shown, with no indication that 79 had
+        # been cut — and because RS drove the ordering, the ones cut were not
+        # a random half.
         title = (f"Shortlist — {len(candidates)} stocks "
                  f"(Stage 2/2P, RS≥{min_rs}%, Dlv30≥{min_deliv}%, ADV≥{min_adv}cr)")
+        if n_passed > len(candidates):
+            title += f"  —  showing top {len(candidates)} of {n_passed} that passed (top_n={top_n})"
         if rs_outage:
             title += "  —  ⚠ RS vs NIFTY UNAVAILABLE THIS RUN"
         ws.cell(row=1, column=1, value=title)
@@ -1402,6 +1444,16 @@ class ExcelReportGenerator:
         ws.column_dimensions['A'].width = 25
         for col in range(2, len(sectors) + 3):
             ws.column_dimensions[get_column_letter(col)].width = 18
+
+        # Freeze the sector-name column. This sheet runs ~124 rows x 70 columns,
+        # so without it the row labels scroll out of view almost immediately.
+        # The layout is stacked blocks rather than one table, so an autofilter
+        # would span unrelated sections and isn't appropriate here.
+        #
+        # Must be a STRING coordinate: the title row is merged, so
+        # ws.cell(row=1, column=2) returns a MergedCell, which openpyxl cannot
+        # accept as a freeze anchor ("MergedCell object is not iterable").
+        ws.freeze_panes = 'B1'
         logger.info("Sector Analysis sheet completed")
 
     # ═══════════════════════════════════════════════════════════════

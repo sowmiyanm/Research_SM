@@ -364,8 +364,12 @@ class StockScreener:
                 if not cached_df.empty:
                     processed_df = self.calculator.process_ticker_data(cached_df, nse_52w_data=nse_52w_data, nifty_df=nifty_df, promoter_data=promoter_data, financial_data=financial_data)
                     return (ticker, processed_df, True, f"Error but cached: {str(e)}")
-            except:
-                pass
+            except Exception as fallback_err:
+                # `except Exception`, not a bare `except`: a bare clause also
+                # catches KeyboardInterrupt and SystemExit, so Ctrl-C during the
+                # cache-fallback of a 1,000-ticker run was silently swallowed and
+                # the run carried on to the next ticker.
+                logger.debug(f"{ticker}: cache fallback also failed: {fallback_err}")
             return (ticker, pd.DataFrame(), False, str(e))
 
     def _process_batch_optimized(self, tickers: List[str], from_date, to_date,
@@ -447,9 +451,14 @@ class StockScreener:
         # Read FNO tickers
         fno_tickers = set(self._read_ticker_file('fno_tickers.txt'))
 
-        # Fetch authoritative 52-week high/low + PE data from NSE quote API
+        # Fetch authoritative 52-week high/low + PE data from NSE quote API.
+        # When NSE is blocking (403) — common for non-India IPs — fall back to
+        # Yahoo Finance which serves 52W high/low without auth.
         logger.info("Fetching 52-week high/low + fundamental data from NSE...")
         nse_52w_data = self.nse_fetcher.fetch_52week_batch(tickers)
+        if not nse_52w_data:
+            logger.info("NSE 52-week fetch returned no data; falling back to Yahoo Finance...")
+            nse_52w_data = self.nse_fetcher.fetch_52week_batch_yahoo(tickers)
 
         # Fetch promoter + financial data in parallel (both are slow API calls)
         from concurrent.futures import ThreadPoolExecutor as _TPE
