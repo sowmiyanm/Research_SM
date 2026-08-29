@@ -541,6 +541,114 @@ class NSEDataFetcher:
         self._log_fetch_outcome("Quote", len(results), len(tickers), failures)
         return results
 
+    def fetch_52week_batch_yahoo(self, tickers: List[str]) -> Dict[str, Dict]:
+        """
+        Fetch 52-week high/low from Yahoo Finance chart API.
+        Free, no auth required, works outside India.
+
+        Uses: query1.finance.yahoo.com/v8/finance/chart/{SYM}.NS
+
+        Args:
+            tickers: List of stock symbols (NSE tickers without .NS suffix)
+
+        Returns:
+            Dict mapping ticker -> {52w_high, 52w_low, 52w_high_date, 52w_low_date}
+            PE and sector_pe will be absent (Yahoo's PE fields require a crumb).
+        """
+        import math
+
+        logger.info(f"Fetching 52-week high/low from Yahoo Finance for {len(tickers)} tickers...")
+
+        yahoo_session = _make_session()
+        yahoo_session.headers.update({
+            'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                           'AppleWebKit/537.36 (KHTML, like Gecko) '
+                           'Chrome/131.0.0.0 Safari/537.36'),
+        })
+
+        results = {}
+        failures = Counter()
+
+        def _fetch_single_yahoo(symbol):
+            try:
+                time.sleep(0.15)  # Rate limiting
+                url = (f"https://query1.finance.yahoo.com/v8/finance/chart/"
+                       f"{symbol}.NS?range=1y&interval=1d")
+                response = yahoo_session.get(url, timeout=10)
+                if response.status_code != 200:
+                    failures[f"HTTP {response.status_code}"] += 1
+                    return symbol, None
+
+                data = response.json()
+                chart = data.get('chart', {}).get('result', [])
+                if not chart:
+                    failures['empty result'] += 1
+                    return symbol, None
+
+                meta = chart[0].get('meta', {})
+                high = meta.get('fiftyTwoWeekHigh')
+                low = meta.get('fiftyTwoWeekLow')
+
+                if high is None or low is None:
+                    failures['missing 52W fields'] += 1
+                    return symbol, None
+
+                # Yahoo timestamps are epoch seconds; convert to date string
+                result = {
+                    '52w_high': float(high),
+                    '52w_low': float(low),
+                    '52w_high_date': '',
+                    '52w_low_date': '',
+                }
+
+                # Try to extract 52W date from the timestamp series
+                try:
+                    timestamps = chart[0].get('timestamp', [])
+                    quotes = chart[0].get('indicators', {}).get('quote', [{}])[0]
+                    highs = quotes.get('high', [])
+                    lows = quotes.get('low', [])
+
+                    if timestamps and highs:
+                        # Find the index of 52W high and its timestamp
+                        # Round to 2dp to match the float precision
+                        high_rounded = round(float(high), 2)
+                        low_rounded = round(float(low), 2)
+
+                        for i, (t, h) in enumerate(zip(timestamps, highs)):
+                            if h is not None and round(h, 2) == high_rounded:
+                                from datetime import datetime
+                                result['52w_high_date'] = datetime.fromtimestamp(
+                                    t).strftime('%d-%b-%Y')
+                                break
+
+                        for i, (t, l) in enumerate(zip(timestamps, lows)):
+                            if l is not None and round(l, 2) == low_rounded:
+                                from datetime import datetime
+                                result['52w_low_date'] = datetime.fromtimestamp(
+                                    t).strftime('%d-%b-%Y')
+                                break
+                except Exception:
+                    pass  # Date extraction is best-effort
+
+                return symbol, result
+
+            except Exception as e:
+                failures[type(e).__name__] += 1
+                return symbol, None
+
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = {executor.submit(_fetch_single_yahoo, t): t for t in tickers}
+            for future in as_completed(futures):
+                try:
+                    symbol, data = future.result()
+                    if data:
+                        results[symbol] = data
+                except Exception as e:
+                    failures[f"future:{type(e).__name__}"] += 1
+
+        self._log_fetch_outcome("Yahoo 52W", len(results), len(tickers), failures)
+        return results
+
     @staticmethod
     def _log_fetch_outcome(label, n_ok, n_total, failures):
         """Report a batch fetch result, including WHY it failed.

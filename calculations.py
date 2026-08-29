@@ -25,6 +25,19 @@ class StockCalculator:
         # corporate action. Must stay above NSE's 20% circuit band -- see
         # detect_corporate_actions() for the measured justification.
         self.corp_action_gap_threshold = config.get('corp_action_gap_threshold_pct', 30.0)
+        # Back-adjust prices/volumes across detected splits & bonuses.
+        # See apply_corporate_action_adjustment(). Set false to restore the old
+        # behaviour (detect and exclude, but leave prices unadjusted).
+        self.adjust_corporate_actions = config.get('adjust_corporate_actions', True)
+        # Only adjust price FALLS. Splits/bonuses (price down) are 62 of 68
+        # observed gaps and land on clean ratios; the handful of upward gaps
+        # do not match any consolidation ratio and may be data artefacts.
+        self.adjust_negative_gaps_only = config.get('adjust_negative_gaps_only', True)
+        # Turnover-continuity confirmation. A corporate action leaves the value
+        # traded unchanged (price halves, share count doubles): measured median
+        # 0.84. A genuine sell-off trades ~5x more value: measured median 4.29.
+        band = config.get('adjust_turnover_band', [0.2, 5.0])
+        self.adjust_turnover_band = (float(band[0]), float(band[1]))
         # Base / pivot / stop parameters (see calculate_base_levels)
         base_cfg = config.get('base_levels', {})
         self.pivot_lookback_weeks = base_cfg.get('pivot_lookback_weeks', 52)
@@ -573,6 +586,137 @@ class StockCalculator:
 
         return df
 
+    def apply_corporate_action_adjustment(self, df):
+        """Back-adjust prices and volumes across detected corporate actions.
+
+        WHY: NSE bhav copy is unadjusted at source. A 1:1 bonus prints as a
+        clean -50% overnight gap, which every downstream indicator then reads
+        as a crash — HDFCAMC showed "52W High -56%" and Stage 1 when it was
+        actually trading near its adjusted highs. Excluding those stocks (the
+        old behaviour) kept them out of the shortlist but also removed ~35 real
+        companies from the investable universe.
+
+        HOW: the gap ratio IS the adjustment factor. For HDFCAMC the close went
+        5336 -> 2679, a ratio of 0.502 — so every price before that date is
+        multiplied by 0.502 to bring it onto the post-bonus scale, and every
+        share count before it is divided by 0.502 (the share count doubled).
+        Multiple actions compound, so the factor for row j is the product of
+        the ratios of all gaps occurring after j.
+
+        Observed ratios land on clean corporate-action fractions, which is a
+        useful sanity check that these are real actions and not crashes:
+            HDFCAMC 0.502 (1:1)   V2RETAIL 0.1019 (1:9)
+            ZFCVINDIA 0.1654 (1:5)  TATAINVEST 0.1043 (1:9)
+
+        IMPORTANT: this runs in memory only. The cache keeps raw NSE data, so
+        the adjustment can never compound across runs, and reverting is just a
+        config flag. delivery_pct is a ratio of two quantities that scale
+        together, so it is mathematically unchanged.
+
+        Adds `adj_factor` (1.0 where nothing was adjusted).
+        """
+        df = df.copy()
+        df['adj_factor'] = 1.0
+        # 'unresolved' = a price discontinuity that is STILL present after this
+        # method has done what it can. This, not corp_action_suspected, is what
+        # the shortlist should exclude on: a stock we successfully corrected is
+        # safe to trade, whereas one we flagged but could not fix still has a
+        # broken price series.
+        df['corp_action_unresolved'] = 'No'
+
+        def _mark_unresolved(frame):
+            """Re-measure gaps on whatever prices we ended up with."""
+            if len(frame) < 2:
+                return frame
+            with np.errstate(divide='ignore', invalid='ignore'):
+                p = (frame['close'] / frame['close'].shift(1).replace(0, np.nan) - 1.0).abs() * 100
+            still = pd.notna(p) & (p > self.corp_action_gap_threshold)
+            if len(still) > 0:
+                still.iloc[0] = False
+            if still.any():
+                frame['corp_action_unresolved'] = 'Yes'
+            return frame
+
+        if not self.adjust_corporate_actions or len(df) < 2:
+            return _mark_unresolved(df)
+
+        close = df['close']
+        prev = close.shift(1)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            ratio = close / prev.replace(0, np.nan)
+            pct = (ratio - 1.0).abs() * 100
+
+        gap = pd.notna(pct) & (pct > self.corp_action_gap_threshold)
+        if len(gap) > 0:
+            gap.iloc[0] = False
+
+        # ── Gate 2: only adjust price FALLS ──────────────────────────────
+        if self.adjust_negative_gaps_only:
+            rejected_up = gap & (ratio > 1.0)
+            if rejected_up.any():
+                logger.info(f"Not adjusting {int(rejected_up.sum())} upward gap(s) "
+                            f"(adjust_negative_gaps_only) - left flagged instead")
+            gap = gap & (ratio < 1.0)
+
+        # ── Gate 3: turnover-continuity confirmation ─────────────────────
+        # A corporate action moves price and share count inversely, so the
+        # VALUE traded is continuous across the ex-date (measured median 0.84).
+        # A genuine sell-off large enough to clear the 30% gate would show
+        # panic volume instead (measured median 4.29 on -15%..-30% days).
+        # Failing this test does NOT mark the stock clean - the row stays
+        # flagged by detect_corporate_actions, so exclude_corp_action still
+        # protects the shortlist. The fallback is today's behaviour, not a
+        # wrong adjustment.
+        lo, hi = self.adjust_turnover_band
+        if gap.any() and 'traded_quantity' in df.columns:
+            turnover = df['close'] * df['traded_quantity']
+            with np.errstate(divide='ignore', invalid='ignore'):
+                tno_ratio = turnover / turnover.shift(1).replace(0, np.nan)
+            confirmed = gap & pd.notna(tno_ratio) & tno_ratio.between(lo, hi)
+            unconfirmed = gap & ~confirmed
+            if unconfirmed.any():
+                for idx in unconfirmed[unconfirmed].index:
+                    logger.warning(
+                        f"Gap of {pct.loc[idx]:.1f}% NOT adjusted - turnover ratio "
+                        f"{tno_ratio.loc[idx]:.2f} outside [{lo}, {hi}], so this looks "
+                        f"more like genuine trading than a corporate action. "
+                        f"Left flagged for exclusion instead."
+                    )
+            gap = confirmed
+
+        if not gap.any():
+            return _mark_unresolved(df)
+
+        # factor[j] = product of gap ratios strictly AFTER j
+        n = len(df)
+        factor = np.ones(n)
+        run = 1.0
+        for j in range(n - 2, -1, -1):
+            if bool(gap.iloc[j + 1]) and pd.notna(ratio.iloc[j + 1]):
+                run *= float(ratio.iloc[j + 1])
+            factor[j] = run
+
+        # Guard: a factor of 0 or a non-finite value would wipe the series out.
+        if not np.all(np.isfinite(factor)) or np.any(factor <= 0):
+            logger.warning("Corporate-action adjustment produced a non-finite/zero factor "
+                           "- leaving prices unadjusted for this ticker")
+            return _mark_unresolved(df)
+
+        for col in ('close', 'high', 'low'):
+            if col in df.columns:
+                df[col] = df[col] * factor
+        # Share counts move inversely to price
+        for col in ('traded_quantity', 'delivery_quantity'):
+            if col in df.columns:
+                df[col] = df[col] / factor
+
+        df['adj_factor'] = factor
+        n_adj = int((factor != 1.0).sum())
+        logger.info(f"Applied corporate-action adjustment to {n_adj} rows "
+                    f"({int(gap.sum())} action(s); factors "
+                    f"{sorted({round(float(r), 4) for r in ratio[gap].dropna()})})")
+        return _mark_unresolved(df)
+
     def calculate_52week_metrics(self, df, nse_52w_data=None):
         """
         Calculate 52-week high/low metrics
@@ -649,17 +793,23 @@ class StockCalculator:
 
     def calculate_relative_strength(self, df, nifty_df):
         """
-        Calculate relative strength of stock vs NIFTY 50
+        Calculate Mansfield Relative Strength of stock vs NIFTY 50.
 
-        Mansfield Relative Strength: (stock_close / nifty_close) normalized,
-        then compare current RS to its own moving average.
+        True Mansfield RS:
+          Raw RS = (stock_close / nifty_close) * 100
+          Mansfield RS = (raw_RS / 52-week_SMA_of_raw_RS - 1) * 100
+
+        A positive reading means the stock is outperforming its OWN historical
+        relationship to the index — it is gaining strength, not just strong in
+        absolute terms. The 52-week (~260 trading day) smoothing is the
+        standard Mansfield lookback for medium-term trend.
 
         Args:
             df: DataFrame with date and close columns
             nifty_df: DataFrame with date and close columns for NIFTY 50
 
         Returns:
-            DataFrame with rs_ratio, rs_trend columns added
+            DataFrame with rs_ratio, rs_trend, rs_signal columns added
         """
         df = df.copy()
 
@@ -669,31 +819,38 @@ class StockCalculator:
             df['rs_signal'] = 'N/A'
             return df
 
-        # Merge NIFTY close prices by date (normalize to date-only to avoid time mismatch)
+        # Merge NIFTY close prices by date
         nifty_close = nifty_df[['date', 'close']].copy()
         nifty_close['date'] = pd.to_datetime(nifty_close['date']).dt.normalize()
         nifty_close = nifty_close.rename(columns={'close': 'nifty_close'})
         df['date'] = pd.to_datetime(df['date']).dt.normalize()
         df = df.merge(nifty_close, on='date', how='left')
-
-        # Forward-fill NIFTY prices for any missing dates
         df['nifty_close'] = df['nifty_close'].ffill()
 
-        # RS ratio: stock performance / NIFTY performance (normalized to 100)
-        # Using rolling 52-day (~2.5 month) rate of change comparison
-        lookback = 52
-        if len(df) >= lookback:
-            stock_roc = df['close'].pct_change(lookback)
-            nifty_roc = df['nifty_close'].pct_change(lookback)
-            # RS = stock ROC - nifty ROC (positive = outperforming)
-            df['rs_ratio'] = (stock_roc - nifty_roc) * 100
-        else:
-            df['rs_ratio'] = np.nan
+        # Step 1: raw RS = (stock_close / nifty_close) * 100
+        df['raw_rs'] = np.where(
+            pd.notna(df['nifty_close']) & (df['nifty_close'] > 0),
+            (df['close'] / df['nifty_close']) * 100,
+            np.nan
+        )
 
-        # RS moving average (10-week ≈ 50 trading days) for trend
+        # Step 2: 52-week (~260 trading day) SMA of raw RS
+        mansfield_period = 260
+        df['raw_rs_ma'] = df['raw_rs'].rolling(
+            window=mansfield_period, min_periods=130
+        ).mean()
+
+        # Step 3: Mansfield RS = (raw_RS / its_52W_SMA - 1) * 100
+        df['rs_ratio'] = np.where(
+            pd.notna(df['raw_rs_ma']) & (df['raw_rs_ma'] > 0),
+            ((df['raw_rs'] / df['raw_rs_ma']) - 1) * 100,
+            np.nan
+        )
+
+        # RS 10-week (~50 day) moving average for trend direction
         df['rs_ma'] = df['rs_ratio'].rolling(window=50, min_periods=25).mean()
 
-        # RS trend: is RS rising or falling vs its own MA?
+        # RS trend: is RS rising or falling vs its own short-term MA?
         df['rs_trend'] = 'N/A'
         for i in range(len(df)):
             rs = df.iloc[i]['rs_ratio']
@@ -713,8 +870,8 @@ class StockCalculator:
             axis=1
         )
 
-        # Clean up temp column
-        df = df.drop(columns=['nifty_close', 'rs_ma'], errors='ignore')
+        # Clean up temp columns
+        df = df.drop(columns=['nifty_close', 'raw_rs', 'raw_rs_ma', 'rs_ma'], errors='ignore')
 
         return df
 
@@ -1286,6 +1443,20 @@ class StockCalculator:
         if df.empty:
             return df
 
+        # Degrade gracefully on frames that lack the volume/delivery columns
+        # (index series like NIFTY_50 carry only date+close). Previously these
+        # raised a bare KeyError deep inside calculate_delivery_percentage,
+        # which told the caller nothing about what was actually missing.
+        df = df.copy()
+        for _req in ('traded_quantity', 'delivery_quantity'):
+            if _req not in df.columns:
+                logger.warning(f"'{_req}' missing - filling with NaN. Delivery/volume "
+                               f"signals will be N/A for this series.")
+                df[_req] = np.nan
+        if 'close' not in df.columns:
+            logger.error("'close' column missing - cannot process this series")
+            return df
+
         # Sort by date, and DE-DUPLICATE defensively.
         #
         # merge_new_data() already de-duplicates, but that is a single line of
@@ -1313,6 +1484,11 @@ class StockCalculator:
         # Detect corporate actions (splits/bonuses) — must run before any
         # technical indicator that depends on historically comparable prices
         df = self.detect_corporate_actions(df)
+
+        # ...then actually FIX them, so every indicator below sees a single,
+        # continuous price series. Runs immediately after detection and before
+        # anything reads `close`. In-memory only; the cache stays raw.
+        df = self.apply_corporate_action_adjustment(df)
 
         # Calculate delivery percentage
         df = self.calculate_delivery_percentage(df)

@@ -888,7 +888,24 @@ class ExcelReportGenerator:
             stage = latest.get('stage', 'N/A')
             rs_ratio = latest.get('rs_ratio')
             deliv_30d = latest.get('deliv_avg_30d')
-            has_ca = ('corp_action_suspected' in df.columns and
+            # A stock that HAD a corporate action but which we successfully
+            # back-adjusted has a clean, continuous price series and is safe to
+            # trade. Excluding on `corp_action_suspected` threw those away too —
+            # 126 stocks, 12% of the universe, including HDFCBANK, BAJFINANCE,
+            # KOTAKBANK, NESTLEIND and DRREDDY.
+            #
+            # So exclude on `corp_action_unresolved`: a discontinuity that is
+            # STILL in the prices after adjustment. That is the set whose
+            # indicators are actually wrong. Falls back to the old column for
+            # frames produced before this existed.
+            if 'corp_action_unresolved' in df.columns:
+                has_ca = (df['corp_action_unresolved'] == 'Yes').any()
+            else:
+                has_ca = ('corp_action_suspected' in df.columns and
+                          (df['corp_action_suspected'] == 'Yes').any())
+            # Kept separately so the Why column can still say "this one had an
+            # action, we corrected it" rather than staying silent about it.
+            had_ca = ('corp_action_suspected' in df.columns and
                       (df['corp_action_suspected'] == 'Yes').any())
 
             # Filters
@@ -979,6 +996,7 @@ class ExcelReportGenerator:
                 'promoter_change': promoter_change,
                 'profit_growth': profit_growth,
                 'has_ca': has_ca,
+                'had_ca': had_ca,
                 'triple_confirm': triple_confirm,
                 'pivot_price': pivot_price,
                 'dist_pivot': dist_pivot,
@@ -1001,8 +1019,9 @@ class ExcelReportGenerator:
         #
         # RS ALONE is a poor sort key — by the time a stock has high relative
         # strength it has usually already moved past its pivot (corr +0.79 with
-        # dist_to_pivot). RS belongs in the FILTER (min_rs: 0 keeps laggards out),
-        # and entry quality belongs in the SORT.
+        # dist_to_pivot). RS belongs in the FILTER (min_rs: 0 keeps laggards out —
+        # positive Mansfield RS means outperforming its own 52-week average
+        # relationship to NIFTY), and entry quality belongs in the SORT.
         #
         # The composite:
         #   45% RS percentile (Weinstein's "buy market leaders" — still matters)
@@ -1166,7 +1185,9 @@ class ExcelReportGenerator:
             if pd.notna(c['dist_stop']) and c['dist_stop'] > 15:
                 why.append(f"Risk{c['dist_stop']:.0f}%")
             if c['has_ca']:
-                why.append('⚠CA')
+                why.append('⚠CA-unfixed')
+            elif c.get('had_ca'):
+                why.append('CA-adj')   # had a split/bonus; prices back-adjusted
             ws.cell(row=r, column=23, value='; '.join(why))
 
             # FNO grey. NOTE: must use c['ticker'] — `ticker` here would be the

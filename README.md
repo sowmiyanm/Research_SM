@@ -115,8 +115,8 @@ These columns show **where the stock sits relative to its own history and the ma
 | **52W High %** | Distance from 52-week high, with date (e.g., "-5.2% (05-Jan)") | Near 0% with Stage 2 = strength, potential new high. Far from high (-30%+) = deep correction. The date tells you when the high was made — recent date = the trend was recently strong. |
 | **52W Low %** | Distance from 52-week low, with date | Near 0% = at lows, weakness or deep value. High percentage (+50%+) = strong rally from bottom. The date tells you when the low was made. |
 | **Near 52W High** | Yes if within 5% of 52-week high | Gold highlight. In Stage 2 with rising WMA = breakout to new highs (very bullish). In Stage 3 with flat WMA = potential distribution zone (caution). |
-| **RS vs NIFTY** | Relative strength: stock's 52-day return minus NIFTY's 52-day return | **The most underused indicator.** Positive = outperforming market. Negative = underperforming. A Stage 2 stock with negative RS is just riding a bull market — it's not genuinely strong. Always prefer RS > 0. |
-| **RS Trend** | Improving / Stable / Weakening | **Early warning system.** RS turning from Weakening to Improving often precedes a Stage 1 → 2 transition. RS turning Weakening in Stage 2 warns of upcoming Stage 3 transition — even before price shows it. |
+| **RS vs NIFTY** | Mansfield Relative Strength: `(stock_close/NIFTY_close) / (its_52W_SMA) - 1` as % | **Mansfield RS.** Positive = stock is outperforming its OWN historical relationship to NIFTY — it is gaining strength, not just strong. Negative = losing relative momentum. A Stage 2 stock with negative RS is in a weakening trend despite being above 30WMA. Always prefer RS > 0. |
+| **RS Trend** | Improving / Stable / Weakening vs 10-week MA of RS | **Early warning system.** RS turning from Weakening to Improving often precedes a Stage 1 → 2 transition. RS turning Weakening in Stage 2 warns of upcoming Stage 3 transition — even before price shows it. |
 | **RSI (14)** | Relative Strength Index (0-100) | <30 = oversold (potential bounce). >70 = overbought. **Context matters**: overbought in Stage 2 with rising WMA is normal (momentum); overbought in Stage 3 is dangerous (exhaustion). |
 | **RSI Signal** | Overbought / Neutral / Oversold | Quick visual. Pink = overbought, green = oversold. |
 
@@ -380,6 +380,17 @@ tickers.txt             Stock list (one per line)
 fno_tickers.txt         F&O stocks (grey highlighting)
 ```
 
+### Handling Ticker Renames
+
+NSE occasionally renames tickers (mergers, rebranding). When this happens:
+
+1. Update the old name in `tickers.txt` to the new one
+2. Rename the cache: `mv data_cache/OLDNAME.pkl data_cache/NEWNAME.pkl`
+3. Rename the Excel backup: `mv data_cache/excel/OLDNAME_historical.xlsx data_cache/excel/NEWNAME_historical.xlsx`
+4. Re-run — the pipeline picks up the cached history under the new name
+
+No code changes needed. The health check will flag the old name as "likely delisted" if you forget.
+
 ## Calculations Reference
 
 ```
@@ -395,7 +406,7 @@ Cross Confirmed  = Cross Above AND week_avg_volume_ratio > breakout_volume_multi
                    (1.0) — since Weinstein's 2x rule governs breakout-week confirmation,
                    not everyday delivery quality.
 Triple Confirm   = price_vs_wma_pct >= 0 AND is_high_vol AND delivery_pct >= 50 (same day)
-RS vs NIFTY      = stock_52d_ROC - nifty_52d_ROC (positive = outperform)
+RS vs NIFTY      = (close/NIFTY_close) / SMA(close/NIFTY_close, 260) - 1 as a %
 RSI (14)         = Standard EMA-based RSI
 52W High/Low     = From NSE quote API (authoritative), fallback to rolling calc
 PE Ratio         = From NSE quote API (metadata.pdSymbolPe)
