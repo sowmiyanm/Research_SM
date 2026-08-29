@@ -5,3 +5,5 @@ __pycache__/
 *.log
 *.xlsx
 __pycache__/
+data_cache/*.pkl
+data_cache/excel/
