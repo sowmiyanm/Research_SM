@@ -38,6 +38,9 @@ class StockCalculator:
         # 0.84. A genuine sell-off trades ~5x more value: measured median 4.29.
         band = config.get('adjust_turnover_band', [0.2, 5.0])
         self.adjust_turnover_band = (float(band[0]), float(band[1]))
+        # Dead-band for the Improving/Weakening/Stable label on rs_trend.
+        # Scale-dependent — see calculate_relative_strength.
+        self.rs_trend_band = config.get('rs_trend_band', 3.0)
         # Base / pivot / stop parameters (see calculate_base_levels)
         base_cfg = config.get('base_levels', {})
         self.pivot_lookback_weeks = base_cfg.get('pivot_lookback_weeks', 52)
@@ -837,7 +840,13 @@ class StockCalculator:
         # Step 2: 52-week (~260 trading day) SMA of raw RS
         mansfield_period = 260
         df['raw_rs_ma'] = df['raw_rs'].rolling(
-            window=mansfield_period, min_periods=130
+            # min_periods == window: every rs_ratio value is computed against a
+            # FULL 52-week average. Allowing a half-window (the previous 130)
+            # meant rows 130-259 were measured against a shorter baseline than
+            # rows 260+, so the series was internally inconsistent — fine for
+            # today's last row, wrong for any backtest that reads history.
+            # Every cached ticker has 350+ rows, so this costs no live coverage.
+            window=mansfield_period, min_periods=mansfield_period
         ).mean()
 
         # Step 3: Mansfield RS = (raw_RS / its_52W_SMA - 1) * 100
@@ -851,14 +860,29 @@ class StockCalculator:
         df['rs_ma'] = df['rs_ratio'].rolling(window=50, min_periods=25).mean()
 
         # RS trend: is RS rising or falling vs its own short-term MA?
+        #
+        # BAND MUST MATCH THE SCALE OF rs_ratio. The old +/-1 was calibrated for
+        # the previous 52-day ROC-difference definition. Mansfield RS is a much
+        # wider series, so +/-1 now sits below the 25th percentile of the normal
+        # deviation and almost nothing reads 'Stable':
+        #
+        #   |rs_ratio - its 50d mean|:  p25 2.44   p50 5.36   p75 9.69   p90 15.73
+        #     band +/-1 -> 10% Stable   (measured: Improving 60 / Weakening 36 / Stable 14)
+        #     band +/-3 -> 30% Stable
+        #     band +/-5 -> 47% Stable
+        #
+        # +/-3 keeps a meaningful middle without making the label sticky. Exposed
+        # as config because it is scale-dependent: change the RS formula and this
+        # has to move with it.
+        band = self.rs_trend_band
         df['rs_trend'] = 'N/A'
         for i in range(len(df)):
             rs = df.iloc[i]['rs_ratio']
             rs_ma = df.iloc[i]['rs_ma']
             if pd.notna(rs) and pd.notna(rs_ma):
-                if rs > rs_ma + 1:
+                if rs > rs_ma + band:
                     df.loc[i, 'rs_trend'] = 'Improving'
-                elif rs < rs_ma - 1:
+                elif rs < rs_ma - band:
                     df.loc[i, 'rs_trend'] = 'Weakening'
                 else:
                     df.loc[i, 'rs_trend'] = 'Stable'
@@ -1241,9 +1265,16 @@ class StockCalculator:
             if pd.notna(low_52w_pct) and low_52w_pct > 5:
                 strength += 1
 
-            # Criterion 5: RSI not oversold (shows some buying interest)
+            # Criterion 5: RSI neutral — some buying interest, not yet extended.
+            #
+            # 'Overbought' used to score here too, on the reasoning "not deeply
+            # oversold". But RSI above 70 on a stock that is by definition still
+            # BASING (below a flat 30WMA) describes a sharp bounce inside the
+            # base, not quiet accumulation — the opposite of the Stage 1 setup
+            # this alert is meant to find. Neutral is the condition that
+            # actually supports the thesis.
             rsi_signal = df.iloc[i].get('rsi_signal', 'N/A')
-            if rsi_signal in ['Neutral', 'Overbought']:  # Not deeply oversold
+            if rsi_signal == 'Neutral':
                 strength += 1
 
             df.loc[i, 'stage1_strength'] = strength

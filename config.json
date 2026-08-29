@@ -7,6 +7,10 @@
   "weekly_wma_period": 30,
   "wma_slope_threshold_pct": 2.0,
   "corp_action_gap_threshold_pct": 30.0,
+  "adjust_corporate_actions": true,
+  "adjust_negative_gaps_only": true,
+  "adjust_turnover_band": [0.2, 5.0],
+  "rs_trend_band": 3.0,
   "base_levels": {
     "pivot_lookback_weeks": 52,
     "pivot_skip_weeks": 4,
@@ -34,6 +38,14 @@
     "min_rs": 0,
     "min_deliv_30d": 45,
     "exclude_corp_action": true,
-    "top_n": 50
+    "ranking": {
+      "max_chase_pct": 10.0,
+      "max_risk_pct": 18.0,
+      "chase_penalty": 25.0,
+      "risk_penalty": 25.0,
+      "no_base_penalty": 30.0
+    },
+    "_comment_exclude_corp_action": "Now means: exclude only stocks whose corporate action could NOT be back-adjusted (corp_action_unresolved). Successfully adjusted stocks are admitted.",
+    "top_n": 100
   }
 }
