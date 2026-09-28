@@ -208,6 +208,16 @@ class StockCalculator:
         # Merge back to daily data. Cross flags are computed at the WEEKLY
         # level — they should only be TRUE on the week-end row (Friday or
         # last trading day of the week), not broadcast to every daily row.
+        #
+        # NOTE (look-ahead): weekly_wma30 / wma_slope / weeks_above_wma /
+        # weeks_below_wma / stage are per-week values broadcast to EVERY daily
+        # row of that week, so a mid-week row (e.g. a Monday) carries values
+        # derived from that week's later (Friday) close. This is safe for live
+        # use — every consumer (Report/Shortlist/Turnaround) reads only the
+        # latest row, and the current partial week aggregates only data through
+        # today — but it makes intra-week HISTORICAL rows unsafe to backtest on.
+        # If you ever read a non-week-end historical row, shift these weekly
+        # columns by one week first to avoid future leakage.
         daily_metrics = ['week', 'weekly_wma30', 'weeks_above_wma',
                          'weeks_below_wma', 'wma_slope']
         df = df.merge(

@@ -58,6 +58,7 @@ class ExcelReportGenerator:
         self.display_order = config.get('display_order', 'descending')
         self.stale_days_threshold = config.get('stale_days_threshold', 4)
         self.shortlist_config = config.get('shortlist', {})
+        self.turnaround_config = config.get('turnaround', {})
 
         self.ticker_metadata = self._load_ticker_metadata()
 
@@ -120,6 +121,7 @@ class ExcelReportGenerator:
         ws_shortlist = wb.active
         ws_shortlist.title = "Shortlist"
 
+        ws_turn = wb.create_sheet("Turnaround")
         ws_report = wb.create_sheet("Report")
         ws_bands = wb.create_sheet("Daily Bands")
         ws_sector = wb.create_sheet("Sector Analysis")
@@ -129,6 +131,7 @@ class ExcelReportGenerator:
         self._build_daily_bands_sheet(ws_bands, ticker_data_dict)
         self._build_sector_analysis_sheet(ws_sector, ticker_data_dict)
         self._build_shortlist_sheet(ws_shortlist, ticker_data_dict, fno_tickers)
+        self._build_turnaround_sheet(ws_turn, ticker_data_dict, fno_tickers)
 
         wb.save(output_filename)
         logger.info(f"Report saved: {output_filename}")
@@ -199,7 +202,7 @@ class ExcelReportGenerator:
         ws.cell(row=header_row, column=summary_col, value="Dlv 10d")
         ws.cell(row=header_row, column=summary_col + 1, value="Dlv 30d")
         ws.cell(row=header_row, column=summary_col + 2, value="Dlv Trend")
-        ws.cell(row=header_row, column=summary_col + 3, value="Divergence")
+        ws.cell(row=header_row, column=summary_col + 3, value="Dlv Divergence")
         ws.cell(row=header_row, column=summary_col + 4, value=f"N≥50%/{self.evaluation_days}")
         ws.cell(row=header_row, column=summary_col + 5, value=f"N≥40%/{self.evaluation_days}")
         ws.cell(row=header_row, column=summary_col + 6, value=f"N≥50%+HV/{self.evaluation_days}")
@@ -253,6 +256,14 @@ class ExcelReportGenerator:
             current_row += 1
 
         last_data_row = current_row - 1
+
+        # ── Drop always-empty fundamental columns (blocked NSE API) so the analyst
+        #    isn't confused by blank cells: Sector PE (20), Promoter % (22),
+        #    Profit Gr. YoY (23). PE (19) is KEPT — it is populated via the MarketLens
+        #    augment. Delete right-to-left so earlier indices don't shift mid-loop. ──
+        for _col in (23, 22, 20):
+            ws.delete_cols(_col, 1)
+        last_col -= 3
 
         # ── Autofilter & freeze panes ──
         ws.auto_filter.ref = f"A{header_row}:{get_column_letter(last_col)}{last_data_row}"
@@ -864,6 +875,32 @@ class ExcelReportGenerator:
     #  SHORTLIST sheet
     # ═══════════════════════════════════════════════════════════════
 
+    def _stale_ticker_set(self, ticker_data_dict):
+        """Tickers whose last cached date lags the universe's newest by more than
+        `stale_days_threshold`. These are stale or delisted/suspended names whose
+        last row is frozen on old data — they must NOT appear on the ranked buy
+        sheets (Shortlist, Turnaround), otherwise a symbol stuck in Stage 2 on
+        stale prices is surfaced as a live buy. Uses the same freshness basis as
+        the post-run health check (newest date across the whole universe).
+
+        Note: if the ENTIRE run is on old data (e.g. a weekend re-run), every
+        ticker shares the same latest date, the gap is 0 for all, and nothing is
+        excluded — which is correct (don't blank the sheet, just don't single
+        anyone out)."""
+        last = {}
+        for t, df in ticker_data_dict.items():
+            if df is None or getattr(df, 'empty', True) or 'date' not in df.columns:
+                continue
+            try:
+                last[t] = pd.to_datetime(df['date']).max()
+            except Exception:
+                continue
+        if not last:
+            return set()
+        newest = max(last.values())
+        thr = getattr(self, 'stale_days_threshold', 4)
+        return {t for t, d in last.items() if (newest - d).days > thr}
+
     def _build_shortlist_sheet(self, ws, ticker_data_dict, fno_tickers):
         if not self.shortlist_config:
             ws.cell(row=1, column=1, value="Shortlist not configured — add 'shortlist' to config.json")
@@ -886,8 +923,13 @@ class ExcelReportGenerator:
         rs_outage = bool(non_empty) and rs_covered == 0
 
         candidates = []
+        stale = self._stale_ticker_set(ticker_data_dict)
+        n_stale_excluded = 0
         for ticker, df in ticker_data_dict.items():
             if df.empty:
+                continue
+            if ticker in stale:            # stale/delisted — never rank on frozen data
+                n_stale_excluded += 1
                 continue
             latest = df.iloc[-1]
 
@@ -1114,6 +1156,8 @@ class ExcelReportGenerator:
                  f"(Stage 2/2P, RS≥{min_rs}%, Dlv30≥{min_deliv}%, ADV≥{min_adv}cr)")
         if n_passed > len(candidates):
             title += f"  —  showing top {len(candidates)} of {n_passed} that passed (top_n={top_n})"
+        if n_stale_excluded:
+            title += f"  —  {n_stale_excluded} stale/delisted excluded"
         if rs_outage:
             title += "  —  ⚠ RS vs NIFTY UNAVAILABLE THIS RUN"
         ws.cell(row=1, column=1, value=title)
@@ -1240,17 +1284,312 @@ class ExcelReportGenerator:
                 for ci in range(3, 23):
                     ws.cell(row=r, column=ci).fill = self.colors['grey']
 
+        # Remove the always-empty Promoter % column (col 17). NSE's promoter API is
+        # blocked, so it is 0% populated and only adds confusion on the selection sheet.
+        # Unmerge the title first, delete, then re-merge to the new width (version-safe).
+        ws.unmerge_cells(start_row=1, start_column=1, end_row=1, end_column=23)
+        ws.delete_cols(17, 1)
+        ncols = 22  # was 23
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=ncols)
+
         # Autofilter, freeze
         last_data_row = hdr_row + len(candidates)
-        ws.auto_filter.ref = f"A{hdr_row}:W{last_data_row}"
+        ws.auto_filter.ref = f"A{hdr_row}:{get_column_letter(ncols)}{last_data_row}"
         ws.freeze_panes = ws.cell(row=hdr_row + 1, column=3)
 
-        # Column widths
+        # Column widths (cols 17..22 are the old 18..23 after the Promoter % removal)
         col_widths = {1: 5, 2: 16, 3: 10, 4: 16, 5: 16, 6: 6, 7: 7, 8: 7,
                       9: 6, 10: 7, 11: 7, 12: 8, 13: 5, 14: 7, 15: 8, 16: 8,
-                      17: 8, 18: 10, 19: 9, 20: 10, 21: 9, 22: 7, 23: 32}
+                      17: 10, 18: 9, 19: 10, 20: 9, 21: 7, 22: 32}
         for c, w in col_widths.items():
             ws.column_dimensions[get_column_letter(c)].width = w
+
+    # ═══════════════════════════════════════════════════════════════
+    #  TURNAROUND / J-CURVE sheet
+    # ═══════════════════════════════════════════════════════════════
+
+    def _build_turnaround_sheet(self, ws, ticker_data_dict, fno_tickers):
+        """
+        J-curve / Stage-1 reversal scanner — the inverse of the Shortlist.
+
+        The Shortlist is built to catch confirmed Stage 2 leaders sitting AT
+        their pivot with positive RS. By construction it CANNOT surface a
+        turnaround early: a J-shaped recovery begins while RS is still negative
+        and price is near its 52-week LOW, deep below its high — precisely the
+        names the Shortlist screens out.
+
+        This sheet looks for a stock emerging from a long decline (well below
+        its 52w high) that has STOPPED falling near its 52w low (30WMA flat or
+        turning up), with early evidence of a turn: RS curling up, delivery
+        accumulation, and a volume-confirmed reclaim of the 30WMA.
+
+        Weinstein's discipline is encoded in the Status column: a name is
+        CONFIRMED only once it has actually crossed into Stage 2 on a rising
+        WMA; otherwise it is WATCH — the base is still forming and a bounce in
+        a downtrend is not a J. Corp-action-unresolved names are excluded: a
+        broken price series can manufacture a fake J (a split prints as a
+        crash-then-recovery).
+        """
+        cfg = self.turnaround_config or {}
+        min_adv        = cfg.get('min_adv_crore', 3)
+        min_below_high = cfg.get('min_below_high_pct', 25)   # was beaten down
+        max_above_low  = cfg.get('max_above_low_pct', 40)    # still near the base
+        stages_ok      = cfg.get('stages', ['Stage 1', 'Stage 2', 'Stage 2 (Pullback)'])
+        exclude_ca     = cfg.get('exclude_corp_action', True)
+        top_n          = cfg.get('top_n', 60)
+
+        candidates = []
+        stale = self._stale_ticker_set(ticker_data_dict)
+        n_stale_excluded = 0
+        for ticker, df in ticker_data_dict.items():
+            if df.empty or len(df) < 20:
+                continue
+            if ticker in stale:            # stale/delisted — never surface on frozen data
+                n_stale_excluded += 1
+                continue
+            latest = df.iloc[-1]
+
+            stage     = latest.get('stage', 'N/A')
+            high_52w  = latest.get('52w_high_pct')
+            low_52w   = latest.get('52w_low_pct')
+            wma_slope = latest.get('wma_slope')
+
+            # Need real 52w context to judge a base. Fail CLOSED on missing.
+            if pd.isna(high_52w) or pd.isna(low_52w):
+                continue
+            if stage not in stages_ok:
+                continue
+            # Deep enough prior decline, and still near the base (not run away).
+            if high_52w > -min_below_high:
+                continue
+            if low_52w > max_above_low:
+                continue
+            # The decline must have HALTED. A still-falling 30WMA is Stage 4 —
+            # no J yet, whatever the bounce looks like.
+            if wma_slope == 'Falling':
+                continue
+
+            # Corp-action: a still-unresolved discontinuity can fake a J.
+            if 'corp_action_unresolved' in df.columns:
+                has_ca = (df['corp_action_unresolved'] == 'Yes').any()
+            else:
+                has_ca = ('corp_action_suspected' in df.columns and
+                          (df['corp_action_suspected'] == 'Yes').any())
+            if exclude_ca and has_ca:
+                continue
+
+            # Liquidity — median ADV, same basis as the Shortlist.
+            if 'traded_quantity' not in df.columns:
+                continue
+            recent = df.iloc[-20:]
+            adv_cr = (recent['traded_quantity'] * recent['close']).median() / 1e7
+            if pd.isna(adv_cr) or adv_cr < min_adv:
+                continue
+
+            rs_ratio    = latest.get('rs_ratio')
+            rs_trend    = latest.get('rs_trend', 'N/A')
+            deliv_30d   = latest.get('deliv_avg_30d')
+            deliv_trend = latest.get('deliv_trend', 'N/A')
+            weeks_below = latest.get('weeks_below_wma', 0)
+            s1_str      = latest.get('stage1_strength', 0)
+
+            # Weekly cross above the 30WMA — the trigger.
+            cross_above = cross_confirmed = False
+            if 'cross_above' in df.columns:
+                cw = df[df['week'] == latest.get('week')]
+                cross_above = bool(cw['cross_above'].any()) if len(cw) else False
+                if cross_above and 'cross_above_confirmed' in df.columns:
+                    cross_confirmed = bool(cw['cross_above_confirmed'].any())
+
+            # ── Turn-strength score: how close to a confirmed turn ──
+            score = 0.0
+            if rs_trend == 'Improving':   score += 30
+            elif rs_trend == 'Stable':    score += 10
+            if wma_slope == 'Rising':     score += 25
+            elif wma_slope == 'Flat':     score += 10
+            if stage in ('Stage 2', 'Stage 2 (Pullback)'): score += 20
+            elif stage == 'Stage 1':      score += 5
+            if deliv_trend == 'Increasing': score += 15
+            if pd.notna(deliv_30d) and deliv_30d >= 50: score += 5
+            if cross_confirmed:           score += 25
+            elif cross_above:             score += 10
+            # Stage-1 accumulation strength — carried ONCE via s1_str (the alert
+            # fires off this same strength, so a separate s1_alert bonus would
+            # double-count the same signal).
+            if pd.notna(s1_str):          score += min(float(s1_str), 5) * 3
+
+            # ── Status: Weinstein confirmation gate (three tiers) ──
+            # Both actionable tiers require a rising 30WMA plus either a
+            # volume-confirmed cross or improving RS. They differ only in where
+            # price sits relative to the WMA:
+            #   CONFIRMED = clean Stage 2, price ABOVE a rising WMA → buy the breakout.
+            #   PULLBACK  = Stage 2 that has dipped back to a rising WMA → continuation
+            #               buy on the dip (tighter stop); NOT the same as a fresh breakout.
+            #   WATCH     = base still forming — don't pre-empt it.
+            turn_ok = wma_slope == 'Rising' and (cross_confirmed or rs_trend == 'Improving')
+            if stage == 'Stage 2' and turn_ok:
+                status = 'CONFIRMED'
+            elif stage == 'Stage 2 (Pullback)' and turn_ok:
+                status = 'PULLBACK'
+            else:
+                status = 'WATCH'
+
+            meta = self.ticker_metadata.get(ticker, {})
+            candidates.append({
+                'ticker': ticker, 'stage': stage,
+                'mcap': meta.get('mcap', ''), 'sector': meta.get('department', ''),
+                'rs_ratio': rs_ratio, 'rs_trend': rs_trend,
+                'high_52w': high_52w, 'low_52w': low_52w,
+                'wma_slope': wma_slope, 'weeks_below': weeks_below,
+                'cross_above': cross_above, 'cross_confirmed': cross_confirmed,
+                'deliv_30d': deliv_30d, 'deliv_trend': deliv_trend,
+                's1_str': s1_str, 'adv_cr': adv_cr,
+                'score': score, 'status': status,
+            })
+
+        if not candidates:
+            ws.cell(row=1, column=1,
+                    value=(f"No turnaround candidates this run "
+                           f"(≥{min_below_high}% below 52wH, ≤{max_above_low}% above 52wL, "
+                           f"30WMA not falling, ADV≥{min_adv}cr)"))
+            ws.column_dimensions['A'].width = 70
+            return
+
+        # CONFIRMED first, then PULLBACK, then WATCH; within each tier by score.
+        _status_rank = {'CONFIRMED': 2, 'PULLBACK': 1, 'WATCH': 0}
+        candidates.sort(key=lambda c: (_status_rank.get(c['status'], 0), c['score']), reverse=True)
+        n_passed = len(candidates)
+        candidates = candidates[:top_n]
+        n_conf = sum(1 for c in candidates if c['status'] == 'CONFIRMED')
+        n_pull = sum(1 for c in candidates if c['status'] == 'PULLBACK')
+        n_watch = len(candidates) - n_conf - n_pull
+
+        # ── Title + discipline note ──
+        title = (f"Turnaround / J-Curve — {len(candidates)} names "
+                 f"({n_conf} confirmed, {n_pull} pullback, {n_watch} watch)  "
+                 f"[≥{min_below_high}% below 52wH, ≤{max_above_low}% above 52wL, "
+                 f"30WMA flat/rising, ADV≥{min_adv}cr]")
+        if n_passed > len(candidates):
+            title += f"  —  showing top {len(candidates)} of {n_passed}"
+        if n_stale_excluded:
+            title += f"  —  {n_stale_excluded} stale/delisted excluded"
+        ws.cell(row=1, column=1, value=title)
+        ws.cell(row=1, column=1).font = _FONT_BOLD_SIZE14
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=19)
+
+        note = ("Weinstein rule: BUY strength on volume, not the bottom.  "
+                "CONFIRMED = clean Stage 2, price above a rising 30WMA → buy the breakout.  "
+                "PULLBACK = established Stage 2 that has dipped back to a rising 30WMA → "
+                "continuation buy on the dip (tighter stop), not a fresh breakout.  "
+                "WATCH = base still forming (RS/WMA turning but not yet crossed into markup) — "
+                "a bounce inside a downtrend is not a J. Corp-action-unresolved names are "
+                "excluded (a split can fake a J-shape).")
+        ws.cell(row=2, column=1, value=note)
+        ws.cell(row=2, column=1).font = _FONT_ITALIC_SIZE11
+        ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=19)
+
+        headers = ['Rank', 'STOCK', 'MCAP', 'Sector', 'Stage', 'Status', 'Score',
+                   'RS %', 'RS Trend', '52WH %', '52WL %', 'WMA Slope', 'Wks▼',
+                   'Cross', 'Dlv30', 'Dlv Trend', 'S1 Str', 'ADV cr', 'Signal']
+        hdr_row = 3
+        for idx, h in enumerate(headers):
+            cell = ws.cell(row=hdr_row, column=idx + 1, value=h)
+            cell.font = _FONT_BOLD
+            cell.fill = _FILL_GREY
+            cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+
+        for rank, c in enumerate(candidates, start=1):
+            r = hdr_row + rank
+            ws.cell(row=r, column=1, value=rank).alignment = Alignment(horizontal='center')
+            sc = ws.cell(row=r, column=2, value=c['ticker'])
+            sc.font = _FONT_BOLD; sc.alignment = Alignment(horizontal='center')
+            ws.cell(row=r, column=3, value=c['mcap']).alignment = Alignment(horizontal='center')
+            ws.cell(row=r, column=4, value=c['sector']).alignment = Alignment(horizontal='center')
+            ws.cell(row=r, column=5, value=c['stage']).alignment = Alignment(horizontal='center')
+
+            st = ws.cell(row=r, column=6, value=c['status'])
+            st.alignment = Alignment(horizontal='center')
+            if c['status'] == 'CONFIRMED':
+                st.fill = _FILL_GREEN_BUY; st.font = _FONT_BOLD_WHITE
+            elif c['status'] == 'PULLBACK':
+                st.fill = _FILL_GREEN_MED; st.font = _FONT_BOLD
+            else:
+                st.fill = _FILL_YELLOW_WARN; st.font = _FONT_BOLD
+
+            ws.cell(row=r, column=7, value=round(c['score'])).alignment = Alignment(horizontal='center')
+
+            _rs = ws.cell(row=r, column=8, value=round(c['rs_ratio'] / 100, 4) if pd.notna(c['rs_ratio']) else None)
+            _rs.number_format = _NUMBER_FMT_PCT; _rs.alignment = Alignment(horizontal='center')
+            rt = ws.cell(row=r, column=9, value=c['rs_trend']); rt.alignment = Alignment(horizontal='center')
+            if c['rs_trend'] == 'Improving':
+                rt.fill = _FILL_GREEN_LIGHT
+            elif c['rs_trend'] == 'Weakening':
+                rt.fill = _FILL_PINK_LIGHT
+
+            _hi = ws.cell(row=r, column=10, value=round(c['high_52w'] / 100, 4) if pd.notna(c['high_52w']) else None)
+            _hi.number_format = _NUMBER_FMT_PCT; _hi.alignment = Alignment(horizontal='center')
+            _lo = ws.cell(row=r, column=11, value=round(c['low_52w'] / 100, 4) if pd.notna(c['low_52w']) else None)
+            _lo.number_format = _NUMBER_FMT_PCT; _lo.alignment = Alignment(horizontal='center')
+
+            wsl = ws.cell(row=r, column=12, value=c['wma_slope']); wsl.alignment = Alignment(horizontal='center')
+            if c['wma_slope'] == 'Rising':
+                wsl.fill = _FILL_GREEN_LIGHT
+            _wb = ws.cell(row=r, column=13, value=int(c['weeks_below']) if pd.notna(c['weeks_below']) else 0)
+            _wb.number_format = _NUMBER_FMT_INT; _wb.alignment = Alignment(horizontal='center')
+
+            cr = ws.cell(row=r, column=14)
+            if c['cross_confirmed']:
+                cr.value = '✓Vol'; cr.fill = _FILL_GREEN_BUY; cr.font = _FONT_BOLD_WHITE
+            elif c['cross_above']:
+                cr.value = '✓'; cr.fill = _FILL_YELLOW_WARN; cr.font = _FONT_BOLD
+            cr.alignment = Alignment(horizontal='center')
+
+            _d30 = ws.cell(row=r, column=15, value=round(c['deliv_30d'] / 100, 4) if pd.notna(c['deliv_30d']) else None)
+            _d30.number_format = _NUMBER_FMT_PCT; _d30.alignment = Alignment(horizontal='center')
+            dt = ws.cell(row=r, column=16, value=c['deliv_trend']); dt.alignment = Alignment(horizontal='center')
+            if c['deliv_trend'] == 'Increasing':
+                dt.fill = _FILL_GREEN_LIGHT
+            elif c['deliv_trend'] == 'Decreasing':
+                dt.fill = _FILL_PINK_LIGHT
+            _s1 = ws.cell(row=r, column=17, value=int(c['s1_str']) if pd.notna(c['s1_str']) else 0)
+            _s1.number_format = _NUMBER_FMT_INT; _s1.alignment = Alignment(horizontal='center')
+            _adv = ws.cell(row=r, column=18, value=round(c['adv_cr'], 1))
+            _adv.number_format = _NUMBER_FMT_1DP; _adv.alignment = Alignment(horizontal='center')
+
+            # Signal tags
+            sig = []
+            if c['cross_confirmed']:
+                sig.append('Cross✓Vol')
+            elif c['cross_above']:
+                sig.append('Cross✓')
+            if c['rs_trend'] == 'Improving':
+                sig.append('RS↑')
+            if c['wma_slope'] == 'Rising':
+                sig.append('WMA↑')
+            elif c['wma_slope'] == 'Flat':
+                sig.append('WMAflat')
+            if c['deliv_trend'] == 'Increasing':
+                sig.append('Dlv↑')
+            if pd.notna(c['s1_str']) and c['s1_str'] >= 3:
+                sig.append(f"S1-{int(c['s1_str'])}")
+            if pd.notna(c['low_52w']) and c['low_52w'] <= 15:
+                sig.append('NearLow')
+            ws.cell(row=r, column=19, value='; '.join(sig))
+
+            # F&O cue: grey only the identity block so the signal colours survive.
+            if c['ticker'] in fno_tickers:
+                for ci in range(3, 6):
+                    ws.cell(row=r, column=ci).fill = self.colors['grey']
+
+        last_data_row = hdr_row + len(candidates)
+        ws.auto_filter.ref = f"A{hdr_row}:S{last_data_row}"
+        ws.freeze_panes = ws.cell(row=hdr_row + 1, column=3)
+
+        col_widths = {1: 5, 2: 16, 3: 10, 4: 16, 5: 16, 6: 11, 7: 6, 8: 7,
+                      9: 11, 10: 7, 11: 7, 12: 10, 13: 6, 14: 8, 15: 7, 16: 11,
+                      17: 7, 18: 7, 19: 30}
+        for cc, w in col_widths.items():
+            ws.column_dimensions[get_column_letter(cc)].width = w
 
     # ═══════════════════════════════════════════════════════════════
     #  SECTOR ANALYSIS sheet

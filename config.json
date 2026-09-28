@@ -47,5 +47,14 @@
     },
     "_comment_exclude_corp_action": "Now means: exclude only stocks whose corporate action could NOT be back-adjusted (corp_action_unresolved). Successfully adjusted stocks are admitted.",
     "top_n": 100
+  },
+  "turnaround": {
+    "min_adv_crore": 3,
+    "min_below_high_pct": 25,
+    "max_above_low_pct": 40,
+    "stages": ["Stage 1", "Stage 2", "Stage 2 (Pullback)"],
+    "exclude_corp_action": true,
+    "top_n": 60,
+    "_comment": "J-curve / Stage-1 reversal scanner (Turnaround sheet). Catches stocks emerging from a long decline (>= min_below_high_pct below 52w high) that have stopped falling near their 52w low (<= max_above_low_pct above it) with the 30WMA flat or rising. Status CONFIRMED = crossed into Stage 2 on a rising WMA (buy the breakout); WATCH = base still forming. All thresholds also default inside the code, so removing this block does not break the sheet."
   }
 }

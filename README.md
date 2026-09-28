@@ -10,9 +10,12 @@ It is built on **Stan Weinstein's Stage Analysis** (the most widely used trend-f
 
 ### What You Get
 
-A daily Excel report with two sheets:
-- **Sheet 1 (Report)**: Every stock with 50 columns of indicators + 60 days of color-coded delivery history
-- **Sheet 2 (Sector Analysis)**: Sector-wise accumulation breakdown showing which sectors are receiving institutional money
+A daily Excel report with **five sheets**:
+- **Shortlist** — the ranked buy-list: Stage 2 / Stage 2 (Pullback) names passing the RS / delivery / liquidity filters, ranked by a blended RS + entry-quality score (chased / wide-stop / no-base entries penalised). Stale/delisted names are excluded.
+- **Turnaround** — the J-curve / Stage-1 reversal scanner: stocks emerging from a long decline (deep below 52w high, near 52w low, 30WMA flat/rising), tagged `CONFIRMED` (crossed into Stage 2 on a rising WMA) vs `WATCH` (base still forming). Also excludes stale/delisted names.
+- **Report** — every stock with ~50 columns of indicators + 60 days of colour-coded delivery history.
+- **Daily Bands** — the delivery colour-band grid across recent sessions.
+- **Sector Analysis** — sector-wise accumulation breakdown showing which sectors are receiving institutional money.
 
 ### How It Helps an Analyst
 
@@ -30,10 +33,14 @@ Every column exists to answer a specific question. The sections below explain wh
 ## Quick Start
 
 ```bash
-pip install -r requirements.txt
-python main.py                    # Auto-detect mode (initial or incremental)
-open Delivery_Report_*.xlsx       # Review the generated report
+pip install -r requirements.txt          # first time only
+python3 main.py                          # DAILY run (default) — fast incremental fetch
+open Delivery_Report_*.xlsx              # review the report (Shortlist tab first)
 ```
+
+Run it **after NSE end-of-day data publishes (~6–7 pm IST)**. Weekends/holidays have no new
+data, so a run just re-reports the last session. The file is written to the current directory
+as `Delivery_Report_<YYYY-MM-DD>.xlsx`, so run from the project folder.
 
 ## The Framework — Four Layers of Evidence
 
@@ -120,17 +127,14 @@ These columns show **where the stock sits relative to its own history and the ma
 | **RSI (14)** | Relative Strength Index (0-100) | <30 = oversold (potential bounce). >70 = overbought. **Context matters**: overbought in Stage 2 with rising WMA is normal (momentum); overbought in Stage 3 is dangerous (exhaustion). |
 | **RSI Signal** | Overbought / Neutral / Oversold | Quick visual. Pink = overbought, green = oversold. |
 
-### D. Fundamental & Valuation Context (Columns 18-22)
-
-These columns add **fundamental depth** so you can distinguish between technically strong stocks that are genuinely undervalued vs overpriced, and whether the breakout is backed by earnings and promoter conviction.
+### D. Fundamental & Valuation Context
 
 | Indicator | What It Shows | Analyst Use |
 |-----------|---------------|-------------|
-| **PE Ratio** | Price-to-Earnings ratio from NSE | **Valuation filter.** A Stage 2 breakout at 15x PE (value zone) is far more sustainable than one at 80x PE (speculative). Green = significantly below sector PE. Pink = significantly above. Use to separate value-driven breakouts from hype-driven ones. |
-| **Sector PE** | Average PE of the stock's sector | **Relative valuation benchmark.** Compare PE Ratio against this. PE below 80% of Sector PE = undervalued relative to peers. PE above 150% of Sector PE = premium pricing, needs strong growth to justify. |
-| **Price vs 200DMA** | Distance from 200-day Simple Moving Average (%) | **Institutional eligibility filter.** Most global institutional funds will not buy stocks trading below their 200 DMA — it's a hardcoded rule in many mandates. Green = above (eligible for institutional buying). Pink = below (most funds won't touch it). A Stage 2 stock above 200 DMA gets institutional tailwind; one below it is fighting against fund mandates. |
-| **Promoter %** | Promoter and promoter group shareholding (%) | **Insider conviction signal.** Promoters have the deepest insider knowledge of their own company. High promoter holding (>60%, green) = skin in the game, aligned incentives. Low promoter holding (<30%, pink) = potential governance risk or lack of conviction. When combined with delivery data, rising promoter % + high delivery = the highest conviction fundamental signal in Indian markets. |
-| **Profit Growth YoY** | Latest quarter's profit after tax vs same quarter last year (%) | **Earnings quality check.** A breakout backed by improving earnings is far more sustainable than pure momentum. Green (>20%) = strong earnings growth — the breakout has fundamental support. Pink (<-20%) = significant earnings decline — the breakout may be speculative. A Stage 2 stock with "All Up" momentum AND >20% profit growth = the highest quality setup. |
+| **PE Ratio** | Price-to-Earnings ratio | **Valuation filter.** A Stage 2 breakout at 15x PE (value zone) is far more sustainable than one at 80x PE (speculative). Separates value-driven breakouts from hype-driven ones. *Sourced from the MarketLens augment since NSE's live fundamentals API is blocked. `main.py` auto-merges it from the newest export in `marketlens_drop/` on every run — the column stays blank only until an export is dropped there.* |
+| **Price vs 200DMA** | Distance from 200-day Simple Moving Average (%) | **Institutional eligibility filter.** Most global funds will not buy a stock trading below its 200 DMA. Green = above (eligible for institutional buying), pink = below. A Stage 2 stock above 200 DMA has an institutional tailwind. |
+
+> **Removed 2026-09** (NSE fundamentals API blocked → these were 0% populated, i.e. confusing blank columns): `Sector PE`, `Promoter %`, `Profit Gr. YoY` from the Report, and `Promoter %` from the Shortlist. The duplicate `Divergence` header was renamed `Dlv Divergence` for the delivery-section one. `PE` is retained because it is filled from the MarketLens export; if a licensed fundamentals feed is added later, the others can be re-added populated.
 
 ### E. Momentum & Advanced Signals (Columns 23-29)
 
@@ -155,7 +159,6 @@ These columns quantify **how consistently institutions are accumulating**.
 | **Deliv Avg(10d)** | Recent 10-day average delivery % | Shows **current** institutional interest. Compare to 30d avg: if 10d > 30d, interest is accelerating. |
 | **Deliv Avg(30d)** | Sustained 30-day average delivery % | Shows **sustained** interest. >= 55% = strong institutional presence. < 40% = mostly speculative activity. |
 | **Deliv Trend** | Increasing / Stable / Decreasing | Direction of delivery momentum. Increasing in Stage 1/2 = bullish. Decreasing in Stage 2/3 = distribution warning. |
-| **Accum Score** | Retired — see Shortlist Ranking above | The one-number composite has been replaced by side-by-side raw data plus RS-based ranking with cross/TC bonuses. |
 | **Count (>=50%)/45** | Days with delivery >= 50% in last 45 days | Raw consistency measure. Higher = more sustained accumulation. |
 | **Count (>=40%)/45** | Days with delivery >= 40% in last 45 days | Broader consistency including moderate interest. |
 | **Count (>=50% + HighVol)/45** | Days with delivery >= 50% AND volume > MA | **The strongest confirmation.** High delivery alone could be low-volume noise. This requires BOTH. >= 15/45 = strong accumulation. |
@@ -169,7 +172,6 @@ These columns tell you **when to sell or avoid**. Each maps to a specific risk.
 
 | Indicator | What It Shows | Analyst Use |
 |-----------|---------------|-------------|
-| **Exit Score** | Retired — see individual exit signals below | Each exit signal (Cross Below, Distribution Alert, Stage 3 Alert, etc.) is shown individually so you can see which risk is actually firing. |
 | **Cross Below WMA** | `SELL (Vol)` or `SELL` or `-` | **Primary Weinstein sell signal.** `SELL (Vol)` (red) = volume-confirmed break below 30WMA. This is the mechanical exit — do not argue with it. `SELL` (yellow) = unconfirmed but still a warning. |
 | **Distribution Alert** | Yes/No | (A) Near 52W high + declining delivery = institutions distributing shares to retail. (B) Stage 3/4 + declining delivery + down-day volume spikes = sustained post-breakdown distribution. Both are classic top signals. |
 | **Stage 3 Alert** | Exit Signal / Stage 3 / - | "Exit Signal" (red) = stock just transitioned from Stage 2 to Stage 3. This is the earliest stage-based exit trigger. |
@@ -245,7 +247,6 @@ Step 11: Check Dist to Pivot ≤ 5%                           → near entry zon
 
 ```
 Check daily:
-  - Exit Score climbing? (>= 3 = attention, >= 6 = sell)
   - Cross Below WMA? (especially "SELL (Vol)" = immediate exit)
   - Divergence = "Bearish"? (delivery falling while price rises = distribution)
   - RS Trend = "Weakening"? (losing relative strength vs market)
@@ -315,7 +316,7 @@ Delivery Data       PE Ratio                  Promoter Holding %       for Relat
   +-------------------------------+
              |
              v
-       Excel Report (2 sheets)
+       Excel Report (5 sheets)
 ```
 
 ### Data Sources
@@ -327,25 +328,48 @@ Delivery Data       PE Ratio                  Promoter Holding %       for Relat
 
 ## Configuration
 
-`config.json`:
+`config.json` (current):
 ```json
 {
   "lookback_days_display": 60,
   "evaluation_days": 45,
   "volume_ma_period": 36,
-  "weekly_wma_period": 30,
   "volume_ma_multiplier": 1.0,
   "breakout_volume_multiplier": 2.0,
+  "weekly_wma_period": 30,
   "wma_slope_threshold_pct": 2.0,
-  "stale_days_threshold": 4,
-  "delivery_bins": { ... },
+
+  "corp_action_gap_threshold_pct": 30.0,   // >this single-day move = candidate corp action
+  "adjust_corporate_actions": true,        // back-adjust splits/bonuses in-memory
+  "adjust_negative_gaps_only": true,       // only down-gaps qualify
+  "adjust_turnover_band": [0.2, 5.0],      // turnover-continuity gate
+  "rs_trend_band": 3.0,                    // ± band for RS "Stable" on the Mansfield scale
+
+  "stale_days_threshold": 4,               // exclude names this many days behind newest
+  "delisted_days_threshold": 60,
+
+  "delivery_bins": { "...": "colour thresholds" },
+
   "shortlist": {
     "min_adv_crore": 5,
     "stages": ["Stage 2", "Stage 2 (Pullback)"],
     "min_rs": 0,
     "min_deliv_30d": 45,
+    "exclude_corp_action": true,           // exclude only UNRESOLVED corp actions
+    "ranking": {
+      "max_chase_pct": 10.0, "max_risk_pct": 18.0,
+      "chase_penalty": 25.0, "risk_penalty": 25.0, "no_base_penalty": 30.0
+    },
+    "top_n": 100
+  },
+
+  "turnaround": {
+    "min_adv_crore": 3,
+    "min_below_high_pct": 25,              // >= this far below 52w high
+    "max_above_low_pct": 40,              // <= this far above 52w low
+    "stages": ["Stage 1", "Stage 2", "Stage 2 (Pullback)"],
     "exclude_corp_action": true,
-    "top_n": 50
+    "top_n": 60
   }
 }
 ```
@@ -353,11 +377,94 @@ Delivery Data       PE Ratio                  Promoter Holding %       for Relat
 ## Command Line
 
 ```bash
-python main.py                          # Auto mode (recommended)
-python main.py --mode initial           # Force full reload
-python main.py --clear-cache            # Clear cache and reload
-python main.py --batch-size 100 --max-workers 8  # Performance tuning
+# DAILY (default) — fetch only new sessions since last run. Use this most days.
+python3 main.py
+python3 main.py --mode daily
+
+# MONTHLY — back up the cache, wipe it, rebuild the full 2-year history from scratch.
+# Auto-rolls-back if the rebuild ends below --min-coverage (default 80%). ~40-70 min.
+python3 main.py --mode monthly
+
+# Other flags
+python3 main.py --clear-cache                     # clear cache before running
+python3 main.py --skip-financials                 # skip quarterly-results fetch (faster)
+python3 main.py --batch-size 100 --max-workers 8  # performance tuning
+python3 main.py --no-backup                       # (monthly) skip pre-rebuild backup — not recommended
+python3 main.py --min-coverage 70                 # (monthly) rollback threshold
 ```
+
+- **Daily** is safe to run repeatedly — it only pulls sessions you don't already have.
+- **Monthly** is the "true-up": run it roughly once a month (or if you suspect drift). It's
+  protected — the old cache is backed up first and automatically restored if the rebuild fails
+  or comes back too sparse.
+- `(daily → auto, monthly → initial)` internally; the older `--mode auto/initial/incremental`
+  names still work.
+
+## Augmenting with MarketLens (optional)
+
+NSE's fundamentals (PE, dividend yield, …) aren't in the free bhav-copy feed, so they can be
+layered in from an NSE **Market Lens** export you download yourself (do NOT scrape it — export
+manually; automated collection breaches NSE's terms).
+
+1. In Market Lens, build a screen with `Current Market Price > 0` (returns the whole universe)
+   and **export it to CSV**.
+2. Drop the file into `marketlens_drop/` (auto-created on first run).
+3. Run the screener normally:
+   ```bash
+   python3 main.py
+   ```
+   On every run `main.py` picks up the **newest** file in `marketlens_drop/` and merges **PE**
+   onto each ticker before the report is written (filling only where NSE returned nothing, so a
+   live value is never overwritten). No renaming needed — drop a fresh export each day. If the
+   folder is empty the run still succeeds; the PE column just stays blank.
+
+To inspect an export before relying on it, run the standalone helper:
+   ```bash
+   python3 marketlens_augment.py         # picks the NEWEST file in marketlens_drop/
+   ```
+   It reports PE / Dividend Yield / Market Cap / Sector coverage keyed by ticker, and
+   **cross-checks** the price data feeding the screener by recomputing 1D/1W/1M return + volume
+   from the cache and comparing to Market Lens. High 1W/1M correlation = your prices agree with
+   NSE's; big per-ticker outliers = stale or mis-adjusted names to inspect.
+
+`test_marketlens_import.py` is a lighter probe that just reports what a given export contains
+and how cleanly it joins to your universe.
+
+## Guards Against False Positives
+
+The ranked sheets are protected against the classic ways a screener misleads:
+
+- **Stale / delisted exclusion** — Shortlist and Turnaround skip any ticker whose last cached
+  date lags the universe's newest by more than `stale_days_threshold`, so a symbol frozen in
+  Stage 2 on old data is never shown as a live buy. The excluded count prints in the sheet title.
+- **Corporate-action adjustment** — splits/bonuses are back-adjusted only when a gap clears
+  three gates (>30% single-day move, negative-only, turnover-continuity). Unresolved cases are
+  flagged and kept off the Shortlist rather than silently mis-priced.
+- **Entry-quality penalties** — RS alone cannot lift a chased / wide-stop / no-base name to the
+  top; explicit penalties demote un-actionable entries.
+- **RS-outage banner** — a *full RS outage* means NIFTY failed to fetch **and** no NIFTY cache
+  was available, so RS vs NIFTY is N/A for every stock that run (rare once the NIFTY cache
+  exists). When it happens the **Shortlist** title shows a red warning and bypasses the RS
+  filter rather than silently ranking on delivery/entry only. The **Turnaround** sheet stays
+  fail-safe in this case — with RS missing, a name can only reach `CONFIRMED` via a
+  volume-confirmed 30WMA cross, so nothing is falsely confirmed — but note it does **not** print
+  the banner itself (see residuals below).
+- **Full-history guards** — Stage 2 / RS require complete WMA (30w) and Mansfield (260d)
+  windows; short-history rows can't be classified as valid signals.
+
+> **Known residuals (flagged, accepted — not gated):**
+>
+> 1. **Corporate-action mis-adjustment.** A genuine >30% news-driven crash that trades on
+>    continuous turnover can still be mis-adjusted as a split/bonus, erasing the decline and
+>    potentially flipping Stage 4 → Stage 2. NSE publishes no corporate-action feed the pipeline
+>    consumes, so this is left as a manual check rather than a wrong automated gate: **sanity-check
+>    any name that suddenly looks "healthy" after a large recent gap-down** before acting on it.
+>
+> 2. **RS-outage banner is Shortlist-only.** During a rare full RS outage (see above), the
+>    Turnaround and Report tabs still compute correctly and fail-safe, but do **not** show the
+>    outage banner. Impact is transparency, not integrity — no false signal results; you simply
+>    won't be warned on those tabs that RS was missing. If a run looks off, check the Shortlist
+>    tab's banner to confirm whether RS was available that run.
 
 ## Performance
 
@@ -370,14 +477,17 @@ python main.py --batch-size 100 --max-workers 8  # Performance tuning
 ## Project Structure
 
 ```
-main.py                 Orchestration — batch processing, NIFTY fetch, 52W fetch, fundamentals fetch
-nse_data_fetcher.py     NSE data — bhav copy, quote API, promoter holdings, financial results
-calculations.py         All calculations — delivery, WMA, stage, RS, momentum, divergence, squeeze, 200DMA
-excel_generator.py      Excel report — 50 columns, formatting, colors, layout
-data_cache.py           Dual cache — pickle (fast) + Excel (readable)
-config.json             Thresholds and settings
-tickers.txt             Stock list (one per line)
-fno_tickers.txt         F&O stocks (grey highlighting)
+main.py                    Orchestration — batch processing, NIFTY fetch, 52W fetch, backup/rollback, health check, CLI
+nse_data_fetcher.py        NSE data — bhav copy, quote API, promoter holdings, financial results, Yahoo 52w fallback
+calculations.py            All calculations — delivery, WMA, stage, RS, momentum, divergence, squeeze, 200DMA, corp-action adjustment
+excel_generator.py         Excel report — 5 sheets (Shortlist, Turnaround, Report, Daily Bands, Sector Analysis)
+data_cache.py              Dual cache — pickle (fast) + Excel (readable)
+marketlens_augment.py      Pick up a Market Lens export from marketlens_drop/, merge PE/yield/mcap/sector, validate returns/volume
+test_marketlens_import.py  Probe an export: report columns, field coverage, join rate
+config.json                Thresholds and settings
+tickers.txt                Stock list (one per line)
+fno_tickers.txt            F&O stocks (grey highlighting)
+marketlens_drop/           Drop your Market Lens CSV export here (auto-created)
 ```
 
 ### Handling Ticker Renames
@@ -409,8 +519,8 @@ Triple Confirm   = price_vs_wma_pct >= 0 AND is_high_vol AND delivery_pct >= 50 
 RS vs NIFTY      = (close/NIFTY_close) / SMA(close/NIFTY_close, 260) - 1 as a %
 RSI (14)         = Standard EMA-based RSI
 52W High/Low     = From NSE quote API (authoritative), fallback to rolling calc
-PE Ratio         = From NSE quote API (metadata.pdSymbolPe)
-Sector PE        = From NSE quote API (metadata.pdSectorPe)
+PE Ratio         = From MarketLens export (NSE quote-API PE is blocked); auto-merged by main.py
+Sector PE        = Removed 2026-09 (NSE quote API blocked → 0% populated)
 200 DMA          = SMA(close, 200) — institutional trend filter
 Price vs 200DMA  = (close - 200DMA) / 200DMA * 100
 Promoter %       = From NSE quote API (securityWiseDP.promoterAndPromoterGroup)

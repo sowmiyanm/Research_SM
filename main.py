@@ -305,6 +305,39 @@ class StockScreener:
         logger.info(f"Initial mode: Fetching from {from_date.date()} to {to_date.date()}")
         return from_date, to_date, False
 
+    def _merge_marketlens_augment(self, ticker_data):
+        """Overlay PE from the newest MarketLens drop-folder export onto each
+        ticker's latest row. NSE's PE quote API is blocked, so pe_ratio comes
+        back NaN from calculations; MarketLens fills that gap. A live NSE value,
+        if one ever arrives, is preferred — we only fill where pe_ratio is NaN."""
+        try:
+            from marketlens_augment import augmentation_frame
+            aug = augmentation_frame()
+        except Exception as e:
+            logger.warning(f"MarketLens augment unavailable ({e}); PE will be blank")
+            return
+
+        if not aug:
+            logger.info("MarketLens: no export in marketlens_drop/ — PE left blank")
+            return
+
+        filled = 0
+        for ticker, df in ticker_data.items():
+            if df is None or df.empty:
+                continue
+            row = aug.get(ticker)
+            if not row:
+                continue
+            pe = row.get('pe')
+            if pe is None or pd.isna(pe):
+                continue
+            last_idx = df.index[-1]
+            if 'pe_ratio' not in df.columns or pd.isna(df.at[last_idx, 'pe_ratio']):
+                df.at[last_idx, 'pe_ratio'] = pe
+                filled += 1
+        logger.info(f"MarketLens: PE filled for {filled}/{len(ticker_data)} tickers "
+                    f"from {len(aug)} export rows")
+
     def _process_single_ticker(self, ticker, from_date, to_date, is_incremental,
                                nse_52w_data=None, nifty_df=None,
                                promoter_data=None, financial_data=None):
@@ -597,6 +630,8 @@ class StockScreener:
             logger.info("\n" + "=" * 80)
             logger.info("Generating Excel Report...")
             logger.info("=" * 80)
+
+            self._merge_marketlens_augment(ticker_data)
 
             try:
                 output_file = self.excel_generator.generate_report(
